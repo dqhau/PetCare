@@ -1,15 +1,43 @@
-var express = require('express');
-var app = express();
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { connectDB } from "./src/config/db.js";
+import mainRouter from "./src/routes/index.js";
 
-app.get('/', function (req, res) {
-   res.send('Hello World');
-})
+dotenv.config(); // Load biến môi trường từ .env
 
-var server = app.listen(8081, function () {
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-  var host = server.address().address
-  var port = server.address().port
+// Middleware
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 
-  console.log("Ung dung Node.js dang lang nghe tai dia chi: http://%s:%s", host, port)
+app.use(express.json());
 
-})
+// Main API entry point
+app.use("/api", mainRouter);
+
+// Khởi động server
+const start = async () => {
+  try {
+    await connectDB(); // Kết nối database trước khi chạy server
+
+    app.listen(PORT, () => {
+      console.log(`
+      =================================
+      Server chạy tại: http://localhost:${PORT}
+      
+      =================================
+      `);
+    });
+  } catch (error) {
+    console.error(" Không thể khởi động server:", error);
+  }
+};
+
+start();
