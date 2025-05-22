@@ -1,43 +1,62 @@
-import express from "express";
+//Sử dụng module 'express' để khởi tại 1 web server
 import cors from "cors";
-import dotenv from "dotenv";
-import { connectDB } from "./src/config/db.js";
-import mainRouter from "./src/routes/index.js";
+import * as dotenv from 'dotenv';
+import express, { json } from "express";
 
-dotenv.config(); // Load biến môi trường từ .env
+import connectDB from "./configs/database.js";
 
+
+import {
+  petRouter,
+  userRouter,
+  serviceRouter,
+  bookingRouter,
+  timeslotRouter,
+<<<<<<< HEAD
+  testRouter,
+=======
+>>>>>>> 37b59e38b3e7f9b81d5a57ca12da94b2c3c5f2c5
+} from "./routes/index.js";
+import notificationRouter from "./routes/notification.js";
+import statisticsRouter from "./routes/statistics.js";
+import uploadRouter from "./routes/upload.js";
+
+dotenv.config();
+//Tạo 1 constant 'app'
 const app = express();
-const PORT = process.env.PORT || 5000;
+//Thêm middleware kiểm soát dữ liệu của Request
+app.use(cors("*"));
+app.use(json());
 
-// Middleware
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  })
-);
+//Kích hoạt router hoạt động định tuyến cho các request của client
 
-app.use(express.json());
+app.get("/", (req, res) => {
+  res.send("<h1>Welcom to</h1>");
+});
+app.use("/pets", petRouter);
+app.use("/users", userRouter);
+app.use("/service", serviceRouter);
+app.use("/booking", bookingRouter);
+app.use("/timeslots", timeslotRouter);
+app.use("/notifications", notificationRouter);
+app.use("/statistics", statisticsRouter);
+app.use("/upload", uploadRouter);
+<<<<<<< HEAD
+app.use("/test", testRouter);
+=======
+>>>>>>> 37b59e38b3e7f9b81d5a57ca12da94b2c3c5f2c5
 
-// Main API entry point
-app.use("/api", mainRouter);
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
-// Khởi động server
-const start = async () => {
-  try {
-    await connectDB(); // Kết nối database trước khi chạy server
+const Port = process.env.PORT || 9999
 
-    app.listen(PORT, () => {
-      console.log(`
-      =================================
-      Server chạy tại: http://localhost:${PORT}
-      
-      =================================
-      `);
-    });
-  } catch (error) {
-    console.error(" Không thể khởi động server:", error);
-  }
-};
+//Lắng nghe các request gửi tới web server tại port
 
-start();
+app.listen(Port, async () => {
+    connectDB();
+    console.log(`web server running on http://localhost:${Port}`);
+})
