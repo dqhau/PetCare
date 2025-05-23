@@ -12,9 +12,6 @@ import {
   serviceRouter,
   bookingRouter,
   timeslotRouter,
-<<<<<<< HEAD
-  testRouter,
-=======
 >>>>>>> 37b59e38b3e7f9b81d5a57ca12da94b2c3c5f2c5
 } from "./routes/index.js";
 import notificationRouter from "./routes/notification.js";
