@@ -5,7 +5,6 @@ import {
 } from "../middleware/authMiddleware.js";
 import { userController, authController } from "../controllers/index.js";
 import jwt from "jsonwebtoken";
-import VaccinationHistory from "../models/VaccinationHistory.js";
 import dotenv from 'dotenv';
 import User from "../models/user.js";
 import createError from "http-errors";
@@ -43,22 +42,26 @@ usersRouter.get("/pet/:userId", async (req, res, next) => {
 usersRouter.get("/vacxin/:userId", async (req, res, next) => {
   try {
     const { userId } = req.params;
+    
+    // Import VaccinationHistory model
+    const VaccinationHistory = (await import('../models/VaccinationHistory.js')).default;
 
     const history = await VaccinationHistory
       .find({ userId })
       .sort({ date: -1 })   
-       .populate({
+      .populate({
         path: "bookingId",
         populate: {
-            path: "service_type",
-            model: "Service"
-          }
+          path: "service_type",
+          model: "Service"
+        }
       })    
       .lean();
 
     res.json(history);
   } catch (err) {
-    next(err);
+    console.error('Error fetching vaccination history:', err);
+    res.status(500).json({ message: 'Không thể lấy lịch sử tiêm phòng' });
   }
 });
 

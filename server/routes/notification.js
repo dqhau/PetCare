@@ -4,27 +4,22 @@ import notificationController from "../controllers/notification.js";
 
 const notificationRouter = express.Router();
 
-// Lấy thông báo - API cho frontend hiện tại
-notificationRouter.get("/", verifyAccessToken, notificationController.getAllNotifications); // API mặc định cho frontend
+// Core notification routes
 
-// API chi tiết hơn cho admin/user
-notificationRouter.get("/admin", verifyAccessToken, notificationController.getAllNotifications); // Lấy thông báo cho admin
-notificationRouter.get("/user/:userId", verifyAccessToken, notificationController.getNotificationsByUserId); // Lấy thông báo cho user cụ thể
+// Lấy thông báo cho user hiện tại
+notificationRouter.get("/", verifyAccessToken, notificationController.getAllNotifications);
 
-// Đánh dấu đã đọc
-notificationRouter.put("/:id/read", verifyAccessToken, notificationController.markAsRead); // Đánh dấu một thông báo đã đọc
+// Lấy thông báo cho user cụ thể (admin only)
+notificationRouter.get("/user/:userId", verifyAccessToken, notificationController.getNotificationsByUserId);
 
-// Đánh dấu tất cả đã đọc - API cho frontend hiện tại
-notificationRouter.put("/read-all", verifyAccessToken, notificationController.markAllAsRead); // API mặc định cho frontend
+// Đánh dấu một thông báo đã đọc
+notificationRouter.put("/:id/read", verifyAccessToken, notificationController.markAsRead);
 
-// API chi tiết hơn cho admin/user
-notificationRouter.put("/admin/read-all", verifyAccessToken, notificationController.markAllAsRead); // Đánh dấu tất cả thông báo của admin đã đọc
-notificationRouter.put("/user/:userId/read-all", verifyAccessToken, notificationController.markAllAsReadForUser); // Đánh dấu tất cả thông báo của user đã đọc
+// Đánh dấu tất cả thông báo đã đọc
+notificationRouter.put("/read-all", verifyAccessToken, notificationController.markAllAsRead);
 
 // Đếm thông báo chưa đọc
-notificationRouter.get("/unread-count", verifyAccessToken, notificationController.getUnreadCount); // API mặc định cho frontend
-notificationRouter.get("/admin/unread-count", verifyAccessToken, notificationController.getUnreadCount); // Đếm thông báo chưa đọc của admin
-notificationRouter.get("/user/:userId/unread-count", verifyAccessToken, notificationController.getUnreadCountForUser); // Đếm thông báo chưa đọc của user
+notificationRouter.get("/unread-count", verifyAccessToken, notificationController.getUnreadCount);
 
 // Tạo thông báo
 notificationRouter.post("/", verifyAccessToken, notificationController.createNotification);

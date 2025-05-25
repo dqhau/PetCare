@@ -1,7 +1,6 @@
 import notificationService from '../services/notificationService.js';
-import User from '../models/user.js';
 
-// Lấy tất cả thông báo (cho admin hoặc API mặc định)
+// Lấy tất cả thông báo cho người dùng hiện tại
 const getAllNotifications = async (req, res) => {
   try {
     // Kiểm tra thông tin người dùng từ token
@@ -12,7 +11,7 @@ const getAllNotifications = async (req, res) => {
     const userId = req.payload.user.id;
     const userRole = req.payload.user.role;
     
-    // Nếu là admin, trả về thông báo của admin (userId = null)
+    // Nếu là admin, trả về tất cả thông báo
     if (userRole === 'admin') {
       const notifications = await notificationService.getAllNotifications();
       return res.status(200).json(notifications);
@@ -56,27 +55,25 @@ const markAsRead = async (req, res) => {
   }
 };
 
-// Đánh dấu tất cả thông báo đã đọc (cho admin hoặc API mặc định)
+// Đánh dấu tất cả thông báo đã đọc cho người dùng hiện tại
 const markAllAsRead = async (req, res) => {
   try {
-    // Kiểm tra role của người dùng từ token
-    const userRole = req.payload?.role;
-    const userId = req.payload?.aud;
+    if (!req.payload || !req.payload.user) {
+      return res.status(401).json({ message: "Bạn chưa đăng nhập" });
+    }
+    
+    const userId = req.payload.user.id;
+    const userRole = req.payload.user.role;
 
-    // Nếu là admin, đánh dấu tất cả thông báo của admin đã đọc
+    // Nếu là admin, đánh dấu tất cả thông báo đã đọc
     if (userRole === 'admin') {
       await notificationService.markAllAsRead();
       return res.status(200).json({ success: true });
     }
     
     // Nếu là user, đánh dấu tất cả thông báo của user đó đã đọc
-    if (userId) {
-      await notificationService.markAllAsReadForUser(userId);
-      return res.status(200).json({ success: true });
-    }
-
-    // Nếu không có thông tin xác thực
-    res.status(403).json({ message: "Không có quyền truy cập" });
+    await notificationService.markAllAsReadForUser(userId);
+    return res.status(200).json({ success: true });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -97,12 +94,15 @@ const markAllAsReadForUser = async (req, res) => {
   }
 };
 
-// Lấy số lượng thông báo chưa đọc (cho admin hoặc API mặc định)
+// Lấy số lượng thông báo chưa đọc cho người dùng hiện tại
 const getUnreadCount = async (req, res) => {
   try {
-    // Kiểm tra role của người dùng từ token
-    const userRole = req.payload?.role;
-    const userId = req.payload?.aud;
+    if (!req.payload || !req.payload.user) {
+      return res.status(401).json({ message: "Bạn chưa đăng nhập" });
+    }
+    
+    const userId = req.payload.user.id;
+    const userRole = req.payload.user.role;
 
     // Nếu là admin, trả về số lượng thông báo chưa đọc của admin
     if (userRole === 'admin') {
@@ -111,13 +111,8 @@ const getUnreadCount = async (req, res) => {
     }
     
     // Nếu là user, trả về số lượng thông báo chưa đọc của user đó
-    if (userId) {
-      const count = await notificationService.getUnreadCountForUser(userId);
-      return res.status(200).json({ count });
-    }
-
-    // Nếu không có thông tin xác thực
-    res.status(403).json({ message: "Không có quyền truy cập" });
+    const count = await notificationService.getUnreadCountForUser(userId);
+    return res.status(200).json({ count });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -163,8 +158,6 @@ export default {
   getNotificationsByUserId,
   markAsRead,
   markAllAsRead,
-  markAllAsReadForUser,
   getUnreadCount,
-  getUnreadCountForUser,
   createNotification
 };

@@ -1,21 +1,12 @@
 import express from "express";
 import statisticsController from "../controllers/statistics.js";
+import { verifyAccessToken } from "../middleware/authMiddleware.js";
 
 const statisticsRouter = express.Router();
 
-// Thống kê tổng quan
-statisticsRouter.get("/basic", statisticsController.getBasicStats);
+// Simplified statistics routes for admin dashboard
 
-// Thống kê người dùng theo tháng
-statisticsRouter.get("/users/by-month", statisticsController.getUserStatsByMonth);
-
-// Thống kê thú cưng theo tháng
-statisticsRouter.get("/pets/by-month", statisticsController.getPetStatsByMonth);
-
-// Thống kê đặt lịch theo tháng
-statisticsRouter.get("/bookings/by-month", statisticsController.getBookingStatsByMonth);
-
-// Thống kê dịch vụ được đặt nhiều nhất
-statisticsRouter.get("/services/top", statisticsController.getTopServices);
+// Thống kê tổng quan - chỉ cần một endpoint
+statisticsRouter.get("/dashboard", verifyAccessToken, statisticsController.getBasicStats);
 
 export default statisticsRouter;

@@ -62,50 +62,6 @@ const timeslotService = {
   },
 
   /**
-   * Lấy timeslot theo ID
-   * @param {string} id - ID của timeslot
-   * @returns {Promise<Object>} Timeslot
-   */
-  async getTimeslotById(id) {
-    try {
-      return await Timeslot.findById(id);
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  /**
-   * Lấy timeslot theo thời gian
-   * @param {string} time - Thời gian (format: HH:mm)
-   * @returns {Promise<Object>} Timeslot
-   */
-  async getTimeslotByTime(time) {
-    try {
-      return await Timeslot.findOne({ time });
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  /**
-   * Cập nhật trạng thái đặt lịch của timeslot
-   * @param {string} id - ID của timeslot
-   * @param {boolean} isBooked - Trạng thái đặt lịch
-   * @returns {Promise<Object>} Timeslot đã cập nhật
-   */
-  async updateBookingStatus(id, isBooked) {
-    try {
-      return await Timeslot.findByIdAndUpdate(
-        id,
-        { isBooked },
-        { new: true }
-      );
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  /**
    * Giảm số lượng slot còn trống
    * @param {string} id - ID của timeslot
    * @returns {Promise<Object>} Timeslot đã cập nhật

@@ -1,7 +1,6 @@
 import Booking from "../models/booking.js";
 import Timeslot from "../models/timeslot.js";
 import User from "../models/user.js";
-import VaccinationHistory from "../models/VaccinationHistory.js";
 import createError from "http-errors";
 
 /**
@@ -385,6 +384,9 @@ const bookingService = {
         booking.service_type &&
         booking.service_type.name.toLowerCase().includes("tiêm chủng")
       ) {
+        // Động import VaccinationHistory model
+        const VaccinationHistory = (await import('../models/VaccinationHistory.js')).default;
+        
         // Kiểm tra xem đã có lịch sử tiêm chủng cho booking này chưa
         const existingHistory = await VaccinationHistory.findOne({
           bookingId: id
@@ -401,6 +403,7 @@ const bookingService = {
             nextVaccinationDate: new Date(new Date().setMonth(new Date().getMonth() + 3))
           };
 
+          // Tạo mới lịch sử tiêm chủng
           const newVaccinationHistory = new VaccinationHistory(vaccinationData);
           await newVaccinationHistory.save();
         }

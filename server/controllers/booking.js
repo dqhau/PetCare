@@ -162,59 +162,70 @@ const getAllBookings = async (req, res, next) => {
   }
 };
 
-// Cập nhật trạng thái booking - API dành cho user hủy lịch
+// Cập nhật trạng thái booking và tạo lịch sử tiêm chủng - API dành cho admin
 const updateBookingStatus = async (req, res, next) => {
   try {
-    // Kiểm tra booking có tồn tại không
-    const booking = await Booking.findById(req.params.id);
-    if (!booking) {
-      throw createError(404, "Không tìm thấy booking");
+    // Kiểm tra quyền admin
+    if (!req.payload || !req.payload.user) {
+      throw createError(401, "Bạn chưa đăng nhập");
     }
     
-    // Kiểm tra trạng thái hiện tại của booking
-    if (booking.order_status !== 'Pending') {
-      throw createError(400, "Chỉ có thể hủy lịch đang ở trạng thái chờ xử lý");
+    // Lấy role trực tiếp từ token
+    const userRole = req.payload.user.role;
+    
+    if (userRole !== 'admin') {
+      throw createError(403, "Bạn không có quyền thực hiện hành động này");
     }
     
-    // Lấy lý do hủy từ request body
-    const { cancel_reason } = req.body;
-    if (!cancel_reason) {
+    // Lấy dữ liệu cập nhật từ request body
+    const { order_status, cancel_reason } = req.body;
+    
+    // Nếu cập nhật thành 'Cancel', yêu cầu lý do hủy
+    if (order_status === 'Cancel' && !cancel_reason) {
       throw createError(400, "Vui lòng cung cấp lý do hủy lịch");
     }
     
-    // Cập nhật trạng thái thành 'Cancel'
-    const updatedBooking = await bookingService.updateBookingStatus(req.params.id, "Cancel", cancel_reason);
-    if (!booking) {
-      throw createError(404, "Không tìm thấy booking");
-    }
-
-    // Tạo thông báo cho admin khi người dùng hủy lịch
-    try {
+    // Gọi service để cập nhật trạng thái và tạo lịch sử tiêm chủng nếu cần
+    const result = await bookingService.updateBookingStatusWithHistory(req.params.id, req.body);
+    
+    // Chỉ tạo thông báo cho user khi admin cập nhật trạng thái booking
+    if (result) {
       // Lấy thông tin dịch vụ
-      const serviceInfo = await Service.findById(updatedBooking.service_type);
+      const serviceInfo = await Service.findById(result.service_type);
       const serviceName = serviceInfo ? serviceInfo.name : 'Không xác định';
       
-      // Lấy thông tin thời gian
-      const bookingDate = new Date(updatedBooking.appointment_date).toLocaleDateString('vi-VN');
-      const timeslotInfo = await Timeslot.findById(updatedBooking.timeslot);
-      const bookingTime = timeslotInfo ? `${timeslotInfo.time}:00` : 'Không xác định';
+      // Lấy thông tin ngày và giờ
+      const bookingDate = new Date(result.appointment_date).toLocaleDateString('vi-VN');
+      const timeslot = await Timeslot.findById(result.timeslot);
+      const bookingTime = timeslot ? timeslot.time : '';
       
-      // Tạo thông báo cho admin (userId = null)
-      const notificationData = {
-        type: 'booking_cancel',
-        message: `Hủy đặt lịch: ${updatedBooking.customer_name} đã hủy lịch dịch vụ ${serviceName} vào ngày ${bookingDate} lúc ${bookingTime}. Lý do: ${cancel_reason}`,
-        relatedId: updatedBooking._id,
-        userId: null // Thông báo cho admin có userId = null
-      };
+      let message = '';
       
-      await notificationService.createNotification(notificationData);
-      console.log('Notification sent to admin for booking cancellation');
-    } catch (notificationError) {
-      console.error('Error creating notification:', notificationError);
-      // Không throw error để không ảnh hưởng đến việc hủy lịch
+      // Tạo nội dung thông báo dựa trên trạng thái mới
+      if (order_status === "Processing") {
+        message = `Lịch đặt dịch vụ ${serviceName} vào ngày ${bookingDate} lúc ${bookingTime}h của bạn đã được xác nhận`;
+      } else if (order_status === "Completed") {
+        message = `Dịch vụ ${serviceName} vào ngày ${bookingDate} lúc ${bookingTime}h của bạn đã được hoàn thành`;
+      } else if (order_status === "Cancel") {
+        const reason = cancel_reason ? ` với lý do: ${cancel_reason}` : '';
+        message = `Lịch đặt dịch vụ ${serviceName} vào ngày ${bookingDate} lúc ${bookingTime}h của bạn đã bị hủy${reason}`;
+      }
+      
+      // Chỉ tạo thông báo nếu có nội dung và userId
+      if (message && result.userId) {
+        const notificationData = {
+          type: order_status === "Cancel" ? 'cancellation' : 
+                (order_status === "Completed" ? 'completion' : 'booking'),
+          message: message,
+          relatedId: result._id,
+          userId: result.userId // Thông báo cho user cụ thể
+        };
+        
+        await notificationService.createNotification(notificationData);
+      }
     }
-
-    res.send(booking);
+    
+    res.json(result);
   } catch (error) {
     next(error);
   }
@@ -450,61 +461,76 @@ const deleteBooking = async (req, res, next) => {
   }
 };
 
-// Cập nhật trạng thái lịch - API dành riêng cho admin
+// Cập nhật trạng thái booking - API dành cho user hủy lịch
 const updateBookingStatusWithHistory = async (req, res, next) => {
   try {
-    // Kiểm tra quyền admin
-    if (!req.payload || !req.payload.user) {
-      throw createError(401, "Bạn chưa đăng nhập");
+    // Kiểm tra booking có tồn tại không
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      throw createError(404, "Không tìm thấy booking");
     }
     
-    // Lấy role trực tiếp từ token
-    const userRole = req.payload.user.role;
-    
-    if (userRole !== 'admin') {
-      throw createError(403, "Bạn không có quyền thực hiện hành động này");
+    // Kiểm tra trạng thái hiện tại của booking
+    if (booking.order_status === 'Completed') {
+      throw createError(400, "Không thể hủy lịch đã hoàn thành");
     }
     
-    const result = await bookingService.updateBookingStatusWithHistory(req.params.id, req.body);
+    if (booking.order_status === 'Cancel') {
+      throw createError(400, "Lịch đã bị hủy trước đó");
+    }
     
-    // Chỉ tạo thông báo cho user khi admin cập nhật trạng thái booking
-    if (result) {
+    // Kiểm tra thời gian hẹn
+    const appointmentDate = new Date(booking.appointment_date);
+    const today = new Date();
+    
+    // Tính số ngày còn lại trước ngày hẹn
+    const timeDiff = appointmentDate.getTime() - today.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    
+    // Nếu còn ít hơn 1 ngày trước hẹn, không cho phép hủy
+    if (daysDiff < 1) {
+      throw createError(400, "Chỉ có thể hủy lịch trước ngày hẹn ít nhất 1 ngày");
+    }
+    
+    // Lấy lý do hủy từ request body
+    const { cancel_reason } = req.body;
+    if (!cancel_reason) {
+      throw createError(400, "Vui lòng cung cấp lý do hủy lịch");
+    }
+    
+    // Cập nhật trạng thái thành 'Cancel'
+    const updatedBooking = await bookingService.updateBookingStatus(req.params.id, "Cancel", cancel_reason);
+    if (!booking) {
+      throw createError(404, "Không tìm thấy booking");
+    }
+
+    // Tạo thông báo cho admin khi người dùng hủy lịch
+    try {
       // Lấy thông tin dịch vụ
-      const serviceInfo = await Service.findById(result.service_type);
+      const serviceInfo = await Service.findById(updatedBooking.service_type);
       const serviceName = serviceInfo ? serviceInfo.name : 'Không xác định';
       
-      // Lấy thông tin ngày và giờ
-      const bookingDate = new Date(result.appointment_date).toLocaleDateString('vi-VN');
-      const timeslot = await Timeslot.findById(result.timeslot);
-      const bookingTime = timeslot ? timeslot.time : '';
+      // Lấy thông tin thời gian
+      const bookingDate = new Date(updatedBooking.appointment_date).toLocaleDateString('vi-VN');
+      const timeslotInfo = await Timeslot.findById(updatedBooking.timeslot);
+      const bookingTime = timeslotInfo ? `${timeslotInfo.time}:00` : 'Không xác định';
       
-      let message = '';
+      // Tạo thông báo cho admin (userId = null)
+      const notificationData = {
+        type: 'cancellation', // Sử dụng loại thông báo hợp lệ
+        message: `Hủy đặt lịch: ${updatedBooking.customer_name} đã hủy lịch dịch vụ ${serviceName} vào ngày ${bookingDate} lúc ${bookingTime}. Lý do: ${cancel_reason}`,
+        relatedId: updatedBooking._id,
+        userId: null // Thông báo cho admin có userId = null
+      };
       
-      // Tạo nội dung thông báo dựa trên trạng thái mới
-      if (req.body.order_status === "Processing") {
-        message = `Lịch đặt dịch vụ ${serviceName} vào ngày ${bookingDate} lúc ${bookingTime}h của bạn đã được xác nhận`;
-      } else if (req.body.order_status === "Completed") {
-        message = `Dịch vụ ${serviceName} vào ngày ${bookingDate} lúc ${bookingTime}h của bạn đã được hoàn thành`;
-      } else if (req.body.order_status === "Cancel") {
-        const reason = req.body.cancel_reason ? ` với lý do: ${req.body.cancel_reason}` : '';
-        message = `Lịch đặt dịch vụ ${serviceName} vào ngày ${bookingDate} lúc ${bookingTime}h của bạn đã bị hủy${reason}`;
-      }
-      
-      // Chỉ tạo thông báo nếu có nội dung và userId
-      if (message && result.userId) {
-        const notificationData = {
-          type: req.body.order_status === "Cancel" ? 'cancellation' : 
-                (req.body.order_status === "Completed" ? 'completion' : 'booking'),
-          message: message,
-          relatedId: result._id,
-          userId: result.userId // Thông báo cho user cụ thể
-        };
-        
-        await notificationService.createNotification(notificationData);
-      }
+      await notificationService.createNotification(notificationData);
+      console.log('Notification sent to admin for booking cancellation');
+    } catch (notificationError) {
+      console.error('Error creating notification:', notificationError);
+      // Không throw error để không ảnh hưởng đến việc hủy lịch
     }
-    
-    res.json(result);
+
+    res.send(booking);
   } catch (error) {
     next(error);
   }

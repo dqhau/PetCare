@@ -1,11 +1,11 @@
-//Sử dụng module 'express' để khởi tại 1 web server
+//Sử dụng module 'express' để khởi tại web server
 import cors from "cors";
 import * as dotenv from 'dotenv';
 import express, { json } from "express";
 
 import connectDB from "./configs/database.js";
 
-
+// Import core routes
 import {
   petRouter,
   userRouter,
@@ -16,7 +16,7 @@ import {
 import notificationRouter from "./routes/notification.js";
 import statisticsRouter from "./routes/statistics.js";
 import uploadRouter from "./routes/upload.js";
-import reminderRouter from "./routes/reminder.js";
+import vaccinationRouter from "./routes/vaccinationRoutes.js";
 
 dotenv.config();
 //Tạo 1 constant 'app'
@@ -38,8 +38,9 @@ app.use(json({ limit: '50mb' }));
 //Kích hoạt router hoạt động định tuyến cho các request của client
 
 app.get("/", (req, res) => {
-  res.send("<h1>Welcom to</h1>");
+  res.send("<h1>Welcome to PetCare API</h1>");
 });
+// Core application routes
 app.use("/pets", petRouter);
 app.use("/users", userRouter);
 app.use("/service", serviceRouter);
@@ -48,7 +49,7 @@ app.use("/timeslots", timeslotRouter);
 app.use("/notifications", notificationRouter);
 app.use("/statistics", statisticsRouter);
 app.use("/upload", uploadRouter);
-app.use("/reminders", reminderRouter);
+app.use("/vaccination", vaccinationRouter);
 
 // Middleware để xử lý lỗi
 app.use(function(err, req, res, next) {
