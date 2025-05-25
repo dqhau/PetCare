@@ -7,7 +7,7 @@ import ContactForm from "./screens/Contact";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { ToastContainer } from "react-toastify";
-import DashBoard from "./DashBoard/Admin/DashBoard";
+import DashBoard from "./Admin/DashBoard";
 import Profile from "./screens/Profile";
 import EditProfile from "./screens/EditProfile";
 import Grooming from "./screens/Grooming";
@@ -18,6 +18,7 @@ import RegisterForm from "./screens/RegisterForm";
 import Change_Password from "./screens/Change_Password";
 import Forgot_Password from "./screens/Forgot_Password";
 import ResetPass from "./screens/ResetPass";
+import VaccinationHistoryUser from "./components/VaccinationHistory/VaccinationHistoryUser";
 
 function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -99,6 +100,7 @@ function AppContent() {
           <Route path="/booking-status" element={<UserBookings />} />
           <Route path="/my-bookings" element={<UserBookings />} />
           <Route path="/pets" element={<MyPets />} />
+          <Route path="/vaccination-history" element={<VaccinationHistoryUser />} />
         </Routes>
         <ToastContainer />
       </div>

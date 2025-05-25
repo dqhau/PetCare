@@ -44,13 +44,17 @@ const UserBookings = () => {
     setLoading(true);
     try {
       const response = await axiosInstance.get(`/booking/user/${userId}`);
-      setBookings(response.data);
+      setBookings(Array.isArray(response.data) ? response.data : []);
       setError(null);
     } catch (error) {
-      console.error('Error fetching user bookings:', error);
       setError('Không thể lấy danh sách đặt lịch. Vui lòng thử lại sau.');
       if (toast.current) {
-        toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể lấy danh sách đặt lịch', life: 3000 });
+        toast.current.show({ 
+          severity: 'error', 
+          summary: 'Lỗi', 
+          detail: error.response?.data?.message || 'Không thể lấy danh sách đặt lịch', 
+          life: 3000 
+        });
       }
     } finally {
       setLoading(false);
@@ -67,11 +71,16 @@ const UserBookings = () => {
     setLoadingVaccination(true);
     try {
       const response = await axiosInstance.get(`/users/vacxin/${userId}`);
-      setVaccinationHistory(response.data);
+      setVaccinationHistory(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
-      console.error('Error fetching vaccination history:', error);
+      setVaccinationHistory([]);
       if (toast.current) {
-        toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể lấy lịch sử tiêm phòng', life: 3000 });
+        toast.current.show({ 
+          severity: 'error', 
+          summary: 'Lỗi', 
+          detail: error.response?.data?.message || 'Không thể lấy lịch sử tiêm phòng', 
+          life: 3000 
+        });
       }
     } finally {
       setLoadingVaccination(false);
@@ -92,9 +101,13 @@ const UserBookings = () => {
       setViewBooking(response.data);
       setShowViewDialog(true);
     } catch (error) {
-      console.error('Error fetching booking details:', error);
       if (toast.current) {
-        toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể lấy chi tiết đặt lịch', life: 3000 });
+        toast.current.show({ 
+          severity: 'error', 
+          summary: 'Lỗi', 
+          detail: error.response?.data?.message || 'Không thể lấy chi tiết đặt lịch', 
+          life: 3000 
+        });
       }
     }
   };
@@ -117,7 +130,8 @@ const UserBookings = () => {
     }
     
     try {
-      await axiosInstance.put(`/booking/update-status/${viewBooking._id}`, { 
+      await axiosInstance.put(`/booking/update-status-with-history/${viewBooking._id}`, { 
+        order_status: 'Cancel',
         cancel_reason: cancelReason
       });
       
@@ -494,7 +508,7 @@ const UserBookings = () => {
                                   Chi tiết
                                 </Button>
                                 
-                                {booking.order_status === 'Pending' && (
+                                {(booking.order_status === 'Pending' || booking.order_status === 'Processing') && (
                                   <Button 
                                     variant="outline-danger" 
                                     size="sm"

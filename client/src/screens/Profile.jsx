@@ -15,7 +15,6 @@ import "../style/profile.css";
 import axiosInstance from "../utils/axiosConfig";
 
 function Profile() {
-  const userId = localStorage.getItem("userId");
   const username = localStorage.getItem("username");
   const [key, setKey] = useState("profile");
 

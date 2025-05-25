@@ -138,6 +138,13 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                         Thú cưng của tôi
                       </Dropdown.Item>
 
+                      <Dropdown.Item href="/vaccination-history">
+                        <i className="pi pi-calendar-plus"
+                          style={{ fontSize: "20px", marginRight: "10px", color: "#273172" }}
+                        />
+                        Lịch sử tiêm phòng
+                      </Dropdown.Item>
+
                       <Dropdown.Item href="/my-bookings">
                         <Calendar
                           style={{ fontSize: "20px", marginRight: "10px" }}

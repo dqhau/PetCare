@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Badge, Dropdown, Spinner } from 'react-bootstrap';
 import { BellFill, Check2All, Calendar3 } from 'react-bootstrap-icons';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosConfig';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
@@ -43,11 +43,7 @@ const NotificationSystem = () => {
     }
 
     try {
-      const response = await axios.get('http://localhost:9999/notifications', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await axiosInstance.get('/notifications');
       
       if (response.data && Array.isArray(response.data)) {
         setNotifications(response.data);
@@ -60,7 +56,6 @@ const NotificationSystem = () => {
       }
       setError(null);
     } catch (err) {
-      console.error('Lỗi khi tải thông báo:', err);
       setError('Không thể tải thông báo');
     } finally {
       setIsLoading(false);
@@ -82,12 +77,7 @@ const NotificationSystem = () => {
   // Đánh dấu thông báo đã đọc
   const markAsRead = async (notificationId) => {
     try {
-      const token = localStorage.getItem('accessToken');
-      await axios.put(`http://localhost:9999/notifications/${notificationId}/read`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      await axiosInstance.put(`/notifications/${notificationId}/read`, {});
       
       // Cập nhật UI
       setNotifications(prev => 
@@ -97,7 +87,6 @@ const NotificationSystem = () => {
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
-      console.error('Lỗi khi đánh dấu đã đọc:', error);
       toast.error('Không thể đánh dấu thông báo đã đọc');
     }
   };
@@ -107,12 +96,7 @@ const NotificationSystem = () => {
     if (unreadCount === 0) return;
     
     try {
-      const token = localStorage.getItem('accessToken');
-      await axios.put('http://localhost:9999/notifications/read-all', {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      await axiosInstance.put('/notifications/read-all', {});
       
       // Cập nhật UI
       setNotifications(prev => 
@@ -121,7 +105,6 @@ const NotificationSystem = () => {
       setUnreadCount(0);
       toast.success('Đã đánh dấu tất cả thông báo là đã đọc');
     } catch (error) {
-      console.error('Lỗi khi đánh dấu tất cả đã đọc:', error);
       toast.error('Không thể đánh dấu tất cả thông báo đã đọc');
     }
   };

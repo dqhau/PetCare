@@ -207,9 +207,9 @@ const EditProfile = ({ editVisible, setEditVisible, data, onUpdate }) => {
               required
             >
               <option value="" disabled>Chọn Giới Tính</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
+              <option value="Male">Nam</option>
+              <option value="Female">Nữ</option>
+              <option value="Other">Khác</option>
             </Form.Control>
           </Form.Group>
           <Form.Group className="mb-3">
@@ -242,7 +242,7 @@ const EditProfile = ({ editVisible, setEditVisible, data, onUpdate }) => {
               required
             />
           </Form.Group>
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" >
             Cập nhật
           </Button>
         </Form>

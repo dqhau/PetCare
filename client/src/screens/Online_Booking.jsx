@@ -46,7 +46,14 @@ const Online_Booking = () => {
     axiosInstance
       .get("/service")
       .then((res) => setServices(res.data))
-      .catch((err) => console.error("Error fetching services:", err))
+      .catch(() => {
+        toast.current?.show({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: 'Không thể tải danh sách dịch vụ',
+          life: 3000
+        });
+      })
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -57,11 +64,9 @@ const Online_Booking = () => {
       axiosInstance
         .get(`/pets/user/${userId}`)
         .then((res) => {
-          console.log("Pets data received:", res.data);
           setPets(Array.isArray(res.data) ? res.data : []);
         })
-        .catch((err) => {
-          console.error("Error fetching user's pets:", err);
+        .catch(() => {
           setPets([]);
         })
         .finally(() => setLoadingPets(false));
@@ -73,7 +78,14 @@ const Online_Booking = () => {
     axiosInstance
       .get("/timeslots")
       .then((res) => setSlots(res.data))
-      .catch((err) => console.error("Error fetching slots:", err));
+      .catch(() => {
+        toast.current?.show({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: 'Không thể lấy danh sách khung giờ',
+          life: 3000
+        });
+      });
   }, []);
 
   // Fetch user profile and set userId into bookingData
@@ -95,8 +107,7 @@ const Online_Booking = () => {
             address: response.data.address || ""
           }));
         })
-        .catch((err) => {
-          console.error("Error loading user profile:", err);
+        .catch(() => {
           // Still set userId even if profile fetch fails
           setBookingData((prev) => ({ ...prev, userId }));
         })
@@ -108,23 +119,21 @@ const Online_Booking = () => {
   const fetchSlotsByDate = async (date) => {
     try {
       setIsLoading(true);
-      // Trong model mới, chúng ta không cần lọc theo ngày nữa
-      console.log("Fetching all available slots");
+      const res = await axiosInstance.get('/timeslots');
       
-      const res = await axiosInstance.get(`/timeslots`);
-      console.log("Slots received:", res.data);
+      // Sort slots by time
+      const sortedSlots = [...res.data].sort((a, b) => a.time - b.time);
+      setSlots(sortedSlots);
       
-      setSlots(res.data);
-      if (res.data.length === 0) {
+      if (sortedSlots.length === 0) {
         toast.current.show({
           severity: 'info',
           summary: 'Thông báo',
-          detail: 'Không có khung giờ nào cho ngày này. Vui lòng chọn ngày khác.',
+          detail: 'Không có khung giờ nào. Vui lòng liên hệ quản trị viên.',
           life: 3000
         });
       }
     } catch (err) {
-      console.error("Error fetching slots by date:", err);
       toast.current.show({
         severity: 'error',
         summary: 'Lỗi',
@@ -175,30 +184,18 @@ const Online_Booking = () => {
 
   // Submit booking
   const handleSubmit = async () => {
-    
     if (!validate()) {
       toast.current.show({
         severity: "error",
-        summary: "Error",
+        summary: "Lỗi",
         detail: "Vui lòng điền đầy đủ thông tin",
         life: 3000,
       });
       return;
     }
     
-    // Kiểm tra xem đã chọn timeslot chưa
-    if (!bookingData.timeslotId) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Vui lòng chọn khung giờ",
-        life: 3000,
-      });
-      return;
-    }
-    
     try {
-      console.log("Preparing booking data...");
+      setIsLoading(true);
       
       const payload = {
         service_type: bookingData.service_type,
@@ -213,33 +210,11 @@ const Online_Booking = () => {
         userId: bookingData.userId
       };
       
-      console.log("Sending booking request with payload:", payload);
-      
-      // Lấy token từ localStorage
-      const token = localStorage.getItem('accessToken');
-      
-      // Sử dụng fetch thay vì axios để xử lý lỗi tốt hơn
-      const response = await fetch("http://localhost:9999/booking", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload),
-      });
-      
-      // Kiểm tra response status
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log("Booking successful:", data);
+      await axiosInstance.post("/booking", payload);
       
       toast.current.show({
         severity: "success",
-        summary: "Success",
+        summary: "Thành công",
         detail: "Yêu cầu đặt lịch thành công",
         life: 3000,
       });
@@ -249,10 +224,10 @@ const Online_Booking = () => {
         service_type: "",
         petId: "",
         description: "",
-        customer_name: "",
-        phone_number: "",
-        email: "",
-        address: "",
+        customer_name: userProfile?.fullname || username || "",
+        phone_number: userProfile?.phone || "",
+        email: userProfile?.email || "",
+        address: userProfile?.address || "",
         appointment_date: "",
         timeslotId: "",
         userId,
@@ -262,13 +237,14 @@ const Online_Booking = () => {
       setErrors({});
       setSelectedSlot("");
     } catch (err) {
-      console.error("Error creating booking:", err);
       toast.current.show({
         severity: "error",
-        summary: "Error",
-        detail: `Lỗi: ${err.message || "Không thể đặt lịch. Vui lòng thử lại sau."}`,
+        summary: "Lỗi",
+        detail: `Lỗi: ${err.response?.data?.message || "Không thể đặt lịch. Vui lòng thử lại sau."}`,
         life: 5000,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
