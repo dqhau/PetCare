@@ -4,11 +4,7 @@ dotenv.config();
 // Tạo transporter cho Nodemailer (sử dụng cấu hình giống như trong users.js)
 const createTransporter = () => {
   // Log để debug
-  console.log('Email config:', {
-    service: process.env.EMAIL_SERVICE,
-    user: process.env.EMAIL_USER ? process.env.EMAIL_USER.substring(0, 5) + '...' : 'undefined',
-    passLength: process.env.EMAIL_PASS ? 'provided' : 'undefined'
-  });
+
   
   return nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE,
@@ -32,9 +28,7 @@ const createTransporter = () => {
 export const sendEmail = async (to, subject, content, isHtml = true) => {
   try {
     // Log thông tin gửi email để debug
-    console.log(`Attempting to send email to: ${to}`);
-    console.log(`Subject: ${subject}`);
-    console.log(`Content length: ${content.length} characters`);
+
     
     const transporter = createTransporter();
     
@@ -60,7 +54,7 @@ export const sendEmail = async (to, subject, content, isHtml = true) => {
     }
 
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully:", info.response);
+
     return { status: "Success", info };
   } catch (error) {
     console.error("Error sending email:", error);

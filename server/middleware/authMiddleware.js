@@ -26,49 +26,6 @@ export const signAccessToken = (userId, role = 'user') => {
 };
 
 /**
- * Ký refresh token cho người dùng
- * @param {string} userId - ID của người dùng
- * @returns {Promise<string>} Token đã ký
- */
-export const signRefreshToken = (userId, role = 'user') => {
-  return new Promise((resolve, reject) => {
-    const payload = { user: { id: userId, role } };
-    const secret = process.env.REFRESH_TOKEN_SECRET;
-    const options = {
-      expiresIn: "1y",
-      issuer: "localhost:9999",
-      audience: userId.toString(),
-    };
-    jwt.sign(payload, secret, options, (err, token) => {
-      if (err) {
-        console.log(err.message);
-        reject(createError.InternalServerError());
-      }
-      resolve(token);
-    });
-  });
-};
-
-/**
- * Xác thực refresh token
- * @param {string} refreshToken - Refresh token cần xác thực
- * @returns {Promise<string>} userId của token
- */
-export const verifyRefreshToken = (refreshToken) => {
-  return new Promise((resolve, reject) => {
-    jwt.verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET,
-      (err, payload) => {
-        if (err) return reject(createError.Unauthorized());
-        const userId = payload.aud;
-        resolve(userId);
-      }
-    );
-  });
-};
-
-/**
  * Middleware xác thực access token
  * Kiểm tra token trong header Authorization
  * Nếu hợp lệ, thêm thông tin vào req.payload

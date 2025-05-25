@@ -1,5 +1,5 @@
 import express from 'express';
-import { petController } from '../controllers/index.js';
+import petController from '../controllers/pets.js';
 
 const petRouter = express.Router();
 

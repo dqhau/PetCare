@@ -114,19 +114,12 @@ const bookingService = {
    */
   async getBookingsByUser(userId) {
     try {
-      console.log('bookingService.getBookingsByUser called with userId:', userId);
-      
-      // Kiểm tra xem userId có đúng định dạng ObjectId không
-      console.log('userId type:', typeof userId);
-      
       const bookings = await Booking.find({ userId })
         .populate("service_type")
         .populate("petId")
         .populate("timeslot")
         .sort({ appointment_date: -1 })
         .exec();
-      
-      console.log(`Found ${bookings.length} bookings for userId ${userId}`);
       return bookings;
     } catch (error) {
       console.error('Error in getBookingsByUser:', error);
@@ -296,17 +289,8 @@ const bookingService = {
    */
   async createBooking(bookingData, timeslot) {
     try {
-      console.log('bookingService.createBooking called with data:', {
-        userId: bookingData.userId,
-        service_type: bookingData.service_type,
-        customer_name: bookingData.customer_name
-      });
-      
       const newBooking = new Booking(bookingData);
-      console.log('New booking model created with userId:', newBooking.userId);
-      
       const savedBooking = await newBooking.save();
-      console.log('Booking saved with ID:', savedBooking._id, 'and userId:', savedBooking.userId);
       return savedBooking;
     } catch (error) {
       throw error;

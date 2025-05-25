@@ -3,8 +3,8 @@ import Timeslot from "../models/timeslot.js";
 import Service from "../models/service.js";
 import Notification from "../models/notification.js";
 import User from "../models/user.js";
-import bookingService from "../services/bookingService.js";
-import notificationService from "../services/notificationService.js";
+import bookingService from "../services/booking.js";
+import notificationService from "../services/notification.js";
 import createError from "http-errors";
 
 // Lấy tổng số dịch vụ đã book
@@ -51,14 +51,9 @@ const getPetBreeds = async (req, res) => {
 const getBookingsByUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    console.log('getBookingsByUser called with userId:', userId);
-    
     if (!userId) {
-      console.log('UserId không được cung cấp');
       return res.status(400).json({ message: "UserId không được cung cấp" });
     }
-
-    console.log('Fetching bookings for userId:', userId);
     const bookings = await bookingService.getBookingsByUser(userId);
     
     // Trả về kết quả với các trường đã được populate
@@ -132,26 +127,21 @@ const getAllBookings = async (req, res, next) => {
     const user = await User.findById(userId);
     const userRole = user ? user.role : null;
     
-    console.log('getAllBookings called with userRole:', userRole);
-    console.log('getAllBookings called with userId:', userId);
+
     
     let bookings;
     
     // Nếu là admin, lấy tất cả booking
     if (userRole === 'admin') {
-      console.log('Getting all bookings for admin');
       bookings = await bookingService.getAllBookings();
-      console.log(`Found ${bookings.length} bookings for admin`);
     } 
     // Nếu là user, chỉ lấy booking của user đó
     else if (userId) {
-      console.log('Getting bookings for user:', userId);
       bookings = await bookingService.getBookingsByUser(userId);
-      console.log(`Found ${bookings.length} bookings for user ${userId}`);
     } 
     // Nếu không có thông tin xác thực
     else {
-      console.log('No authentication information found');
+
       return res.status(403).json({ error: "Bạn không có quyền truy cập" });
     }
     
@@ -285,9 +275,7 @@ const createBooking = async (req, res, next) => {
     // Ưu tiên sử dụng userId từ token, nếu không có thì sử dụng userId từ request body
     const userId = tokenUserId || bodyUserId;
     
-    console.log('Creating booking with userId:', userId);
-    console.log('Token userId:', tokenUserId);
-    console.log('Body userId:', bodyUserId);
+
 
     // 1. Validate bắt buộc
 
@@ -396,7 +384,7 @@ const createBooking = async (req, res, next) => {
         };
         
         await notificationService.createNotification(userNotificationData);
-        console.log(`Đã gửi thông báo xác nhận đặt lịch đến user ${userId}`);
+
       } catch (notificationError) {
         console.error('Lỗi khi tạo thông báo cho user:', notificationError);
         // Không throw error để không ảnh hưởng đến việc tạo booking
@@ -524,7 +512,7 @@ const updateBookingStatusWithHistory = async (req, res, next) => {
       };
       
       await notificationService.createNotification(notificationData);
-      console.log('Notification sent to admin for booking cancellation');
+
     } catch (notificationError) {
       console.error('Error creating notification:', notificationError);
       // Không throw error để không ảnh hưởng đến việc hủy lịch

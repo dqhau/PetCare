@@ -1,10 +1,9 @@
 import express from "express";
 import {
-  verifyRefreshToken,
-  verifyAccessToken,
+  verifyAccessToken
 } from "../middleware/authMiddleware.js";
-import { userController, authController } from "../controllers/index.js";
-import jwt from "jsonwebtoken";
+import userController from "../controllers/users.js";
+import authController from "../controllers/auth.js";
 import dotenv from 'dotenv';
 import User from "../models/user.js";
 import createError from "http-errors";
@@ -137,21 +136,7 @@ usersRouter.delete("/logout", async (req, res, next) => {
   res.send("Đường dẫn Đăng xuất");
 });
 
-usersRouter.post("/refresh-token", async (req, res, next) => {
-  try {
-    const { refreshToken } = req.body;
-    if (!refreshToken)
-      throw createError.BadRequest("Refresh token không hợp lệ");
-    const userId = await verifyRefreshToken(refreshToken);
-    if (userId) {
-      const accessToken = await signAccessToken(userId);
-      const newRefreshToken = await signRefreshToken(userId);
-      res.send({ accessToken, refreshToken: newRefreshToken });
-    }
-  } catch (error) {
-    next(error);
-  }
-});// Trong file usersRouter.js
+// Refresh token functionality removed
 
 
 

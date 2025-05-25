@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import timeslotService from "../services/timeslotService.js";
+import timeslotService from "../services/timeslot.js";
 
 class TimeslotController {
   /**

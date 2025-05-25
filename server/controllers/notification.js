@@ -1,4 +1,4 @@
-import notificationService from '../services/notificationService.js';
+import notificationService from '../services/notification.js';
 
 // Lấy tất cả thông báo cho người dùng hiện tại
 const getAllNotifications = async (req, res) => {

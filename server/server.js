@@ -16,7 +16,7 @@ import {
 import notificationRouter from "./routes/notification.js";
 import statisticsRouter from "./routes/statistics.js";
 import uploadRouter from "./routes/upload.js";
-import vaccinationRouter from "./routes/vaccinationRoutes.js";
+import vaccinationRouter from "./routes/vaccination.js";
 
 dotenv.config();
 //Tạo 1 constant 'app'

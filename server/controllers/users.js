@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
-import userService from '../services/userService.js';
+import userService from '../services/user.js';
 import User from "../models/user.js";
 
 // Cấu hình dotenv

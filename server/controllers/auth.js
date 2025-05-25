@@ -1,5 +1,5 @@
-import userService from '../services/userService.js';
-import { signAccessToken, signRefreshToken } from "../middleware/authMiddleware.js";
+import userService from '../services/user.js';
+import { signAccessToken} from "../middleware/authMiddleware.js";
 import jwt from 'jsonwebtoken';
 
 /**
@@ -43,15 +43,13 @@ const authController = {
       // Sử dụng service để kiểm tra đăng nhập
       const user = await userService.loginUser(username, password);
       
-      // Tạo các token với role
+      // Tạo access token với role
       const accessToken = await signAccessToken(user._id, user.role);
-      const refreshToken = await signRefreshToken(user._id, user.role);
       
       // Trả về thông tin người dùng và token
       res.status(200).json({
         username: user.username,
         accessToken,
-        refreshToken,
         id: user._id,
         fullname: user.fullname,
         role: user.role,

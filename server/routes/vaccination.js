@@ -6,7 +6,7 @@ import {
   createVaccination, 
   updateVaccination, 
   deleteVaccination 
-} from "../controllers/vaccinationController.js";
+} from "../controllers/vaccination.js";
 import { verifyAccessToken as verifyToken, isAdmin as verifyAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();

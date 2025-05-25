@@ -1,4 +1,4 @@
-import petService from "../services/petService.js";
+import petService from "../services/pet.js";
 
 // Lấy tất cả thú cưng
 const getAllPets = async (req, res) => {

@@ -1,4 +1,4 @@
-import serviceService from "../services/serviceService.js";
+import serviceService from "../services/service.js";
 
 const fetchAllService = async (req, res) => {
   try {
