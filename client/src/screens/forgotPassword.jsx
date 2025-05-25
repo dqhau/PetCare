@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { FaEnvelope, FaArrowLeft, FaLock } from "react-icons/fa";
 import axiosInstance from "../utils/axiosConfig";
 
-const Forgot_Password = () => {
+const ForgotPassword = () => {
   const [gmail, setGmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
@@ -94,7 +94,7 @@ const Forgot_Password = () => {
                 <Button 
                   variant="primary" 
                   type="submit" 
-                  className="w-100 py-2 mt-3"
+                  className="auth-btn py-2 mt-3"
                   disabled={isSubmitting || !gmail}
                 >
                   {isSubmitting ? (
@@ -125,4 +125,4 @@ const Forgot_Password = () => {
   );
 };
 
-export default Forgot_Password;
+export default ForgotPassword;

@@ -13,9 +13,9 @@ import { Lock, Unlock, ShieldLock, KeyFill } from "react-bootstrap-icons";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import "../style/auth-forms.css";
+import "../style/authForms.css";
 
-const Change_Password = () => {
+const ChangePassword = () => {
   const [oldPass, setOldPass] = useState("");
   const [newPass, setNewPass] = useState("");
   const [reNewPass, setReNewPass] = useState("");
@@ -173,4 +173,4 @@ const Change_Password = () => {
   );
 };
 
-export default Change_Password;
+export default ChangePassword;

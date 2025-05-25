@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../style/login.css";
-import "../style/auth-forms.css";
+import "../style/authForms.css";
 import logo from "../assets/images/Pet_logo.png";
 import { FaUser, FaLock, FaUserPlus, FaIdCard, FaCheckCircle, FaEnvelope } from "react-icons/fa";
 import axiosInstance from "../utils/axiosConfig";

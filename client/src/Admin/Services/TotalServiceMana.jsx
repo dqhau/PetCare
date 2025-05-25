@@ -1,6 +1,6 @@
 import React from "react";
 import "../../../style/totalService.css";
-import Total_Earned from "./Total_Earned";
+// import Total_Earned from "./totalEarned"; // File doesn't exist in the project
 import TotalServices from "./TotalServices";
 import TotalBreed from "./TotalBreed";
 import TotalByMonth from "./TotalByMonth";
@@ -18,7 +18,7 @@ const TotalServiceMana = () => {
               <TotalServices />
             </Col>
             <Col md={6}>
-              <Total_Earned />
+              {/* Total_Earned component removed as file doesn't exist */}
             </Col>
           </Row>
         </Container>

@@ -3,11 +3,11 @@ import { Button, Col, Row } from "react-bootstrap";
 import logo from "../assets/images/logo.png";
 import Form from "react-bootstrap/Form";
 import { Toast } from "primereact/toast";
-import New_Paper from "../components/New_Paper.jsx";
+import NewPaper from "../components/newPaper.jsx";
 import Loading from "../components/Loading";
 import axiosInstance from "../utils/axiosConfig";
 
-const Online_Booking = () => {
+const OnlineBooking = () => {
   const [services, setServices] = useState([]);
   const [slots, setSlots] = useState([]);
   const [errors, setErrors] = useState({});
@@ -252,10 +252,10 @@ const Online_Booking = () => {
     <div>
       <Row>
         <div
-          className="mt-3 text-center"
-          style={{ backgroundColor: "#f4f5f5", width: "100%", height: "200px" }}
+          className="mt-3 text-center py-3"
+          style={{ backgroundColor: "#f4f5f5", width: "100%", height: "120px" }}
         >
-          <img src={logo} alt="logo" />
+          <img src={logo} alt="logo" style={{ maxHeight: "80px" }} />
         </div>
       </Row>
 
@@ -471,7 +471,7 @@ const Online_Booking = () => {
             </Col>
 
             <Col md={4}>
-              <New_Paper />
+              <NewPaper />
             </Col>
           </Row>
         </Col>
@@ -482,4 +482,4 @@ const Online_Booking = () => {
   );
 };
 
-export default Online_Booking;
+export default OnlineBooking;

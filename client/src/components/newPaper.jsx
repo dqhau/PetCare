@@ -4,7 +4,7 @@ import { Card } from "primereact/card";
 // Use a different image to avoid special character issues
 import logo from "../assets/images/logo.png";
 
-const SupportSection = () => {
+const NewPaper = () => {
   return (
     <div className="support-section">
       <div className="support-header d-flex">
@@ -39,4 +39,4 @@ const SupportSection = () => {
   );
 };
 
-export default SupportSection;
+export default NewPaper;

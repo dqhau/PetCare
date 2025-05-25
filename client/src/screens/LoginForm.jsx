@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Container, Row, Col, Button, Card } from "react-bootstrap";
 import "../style/login.css";
-import "../style/auth-forms.css";
+import "../style/authForms.css";
 import logo from "../assets/images/Pet_logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -30,9 +30,9 @@ const LoginForm = ({ setIsLoggedIn }) => {
         },
       });
 
-      const { accessToken, refreshToken, username, id, fullname, role } =
+      const { accessToken, username, id, fullname, role } =
         res.data;
-      localStorage.setItem("refreshToken", refreshToken);
+      // No longer using refresh tokens
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("username", username); // Lưu tên người dùng vào localStorage
       localStorage.setItem("fullname", fullname); // Lưu tên người dùng vào localStorage

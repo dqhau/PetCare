@@ -242,9 +242,11 @@ const EditProfile = ({ editVisible, setEditVisible, data, onUpdate }) => {
               required
             />
           </Form.Group>
-          <Button variant="primary" type="submit" >
-            Cập nhật
-          </Button>
+          <div className="text-center mb-3">
+            <Button variant="primary" type="submit" className="auth-btn">
+              Cập nhật
+            </Button>
+          </div>
         </Form>
       </Modal.Body>
       {/* Toast thành công */}

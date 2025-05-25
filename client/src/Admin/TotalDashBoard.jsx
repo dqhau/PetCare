@@ -3,24 +3,11 @@ import { Container, Row } from "react-bootstrap";
 import StatCards from "./Chart/StartCard";
 import TopSellingTable from "./Chart/TopSellingTable";
 import StatCards2 from "./Chart/StatCards2";
-import { Card, Grid, styled, useTheme, Typography } from "@mui/material";
-import BookingStatsChart from "./Chart/BookingStatsChart";
-import ServiceStatsChart from "./Chart/ServiceStatsChart";
+import { Grid, Typography } from "@mui/material";
 import MonthlyBookingChart from "./Chart/MonthlyBookingChart";
 import axios from "axios";
 
 const TotalDashBoard = () => {
-  const { palette } = useTheme();
-  const Title = styled("span")(() => ({
-    fontSize: "1rem",
-    fontWeight: "500",
-    marginRight: ".5rem",
-    textTransform: "capitalize",
-  }));
-  const SubTitle = styled("span")(({ theme }) => ({
-    fontSize: "0.875rem",
-    color: theme.palette.text.secondary,
-  }));
   const [dashboardStats, setDashboardStats] = useState({
     totalBookings: 0,
     bookingsByStatus: {
@@ -36,9 +23,7 @@ const TotalDashBoard = () => {
   useEffect(() => {
     const fetchDashboardStats = async () => {
       try {
-        console.log('Fetching dashboard stats...');
         const response = await axios.get('http://localhost:9999/statistics/dashboard');
-        console.log('Dashboard stats response:', response.data);
         setDashboardStats(response.data);
       } catch (error) {
         console.error('Error fetching dashboard stats:', error);
@@ -50,32 +35,26 @@ const TotalDashBoard = () => {
   
   return (
     <Container fluid>
-      <Row style={{ marginLeft: "30px", width: "100%", marginTop: "30px" }}>
-        <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
+      <Row style={{ marginLeft: "20px", width: "95%", marginTop: "20px" }}>
+        <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
           Thống kê tổng quan
         </Typography>
         
+        {/* Stat Cards - Top row with 4 cards */}
         <StatCards />
         
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid item xs={12} md={6}>
-            <BookingStatsChart />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <ServiceStatsChart />
-          </Grid>
-        </Grid>
+        {/* Monthly Charts */}
+        <MonthlyBookingChart />
         
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid item xs={12}>
-            <MonthlyBookingChart />
-          </Grid>
-        </Grid>
-        
-        <TopSellingTable />
-
+        {/* Bottom Section */}
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          {/* Popular Services Table */}
+          <Grid item xs={12} md={7}>
+            <TopSellingTable />
+          </Grid>
+          
+          {/* Booking Status Cards */}
+          <Grid item xs={12} md={5}>
             <StatCards2 />
           </Grid>
         </Grid>

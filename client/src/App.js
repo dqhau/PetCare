@@ -1,8 +1,8 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Home_Page from "./layout/Home_Page";
-import Online_Booking from "./screens/Online_Booking";
+import HomePage from "./layout/homePage";
+import OnlineBooking from "./screens/onlineBooking";
 import ContactForm from "./screens/Contact";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -15,8 +15,8 @@ import MyPets from "./screens/MyPets";
 import UserBookings from "./screens/UserBookings";
 import LoginForm from "./screens/LoginForm";
 import RegisterForm from "./screens/RegisterForm";
-import Change_Password from "./screens/Change_Password";
-import Forgot_Password from "./screens/Forgot_Password";
+import ChangePassword from "./screens/changePassword";
+import ForgotPassword from "./screens/forgotPassword";
 import ResetPass from "./screens/ResetPass";
 import VaccinationHistoryUser from "./components/VaccinationHistory/VaccinationHistoryUser";
 
@@ -38,9 +38,9 @@ function AppContent() {
     <div className={isAuthPage ? "auth-page" : ""}>
       {!isAuthPage && <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />}
       <Routes>
-          <Route path="/" element={<Home_Page />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/grooming" element={<Grooming />} />
-          <Route path="/online-booking" element={<Online_Booking />} />
+          <Route path="/online-booking" element={<OnlineBooking />} />
           <Route
             path="/login"
             element={
@@ -63,7 +63,7 @@ function AppContent() {
             path="/changepass"
             element={
               <>
-                <Change_Password />
+                <ChangePassword />
                 <Footer />
               </>
             }
@@ -72,7 +72,7 @@ function AppContent() {
             path="/forgot"
             element={
               <>
-                <Forgot_Password />
+                <ForgotPassword />
                 <Footer />
               </>
             }

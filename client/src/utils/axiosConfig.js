@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Tạo một instance axios với cấu hình mặc định
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:9999',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:9999',
 });
 
 // Thêm interceptor để tự động thêm token vào header của mọi request

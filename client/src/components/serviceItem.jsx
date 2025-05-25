@@ -7,7 +7,7 @@ import dogImage2 from "../assets/images/008-care.png";
 import dogImage3 from "../assets/images/009-shower-e1573897060648.png";
 import { Link } from "react-router-dom";
 
-const Service_Item = () => {
+const ServiceItem = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
 
   return (
@@ -127,4 +127,4 @@ const Service_Item = () => {
   );
 };
 
-export default Service_Item;
+export default ServiceItem;

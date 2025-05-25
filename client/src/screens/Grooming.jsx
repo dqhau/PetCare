@@ -1,7 +1,7 @@
 import React from "react";
 import "../style/grooming.css";
 import Footer from "../components/Footer";
-import Online_Booking from "./Online_Booking";
+import OnlineBooking from "./onlineBooking";
 const Grooming = () => {
   return (
     <>
@@ -256,7 +256,7 @@ const Grooming = () => {
           </div>
         </div>
       </section>
-      <Online_Booking />
+      <OnlineBooking />
       <Footer />
     </>
   );

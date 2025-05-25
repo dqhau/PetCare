@@ -4,8 +4,8 @@ import { FaEdit, FaTrash, FaEye, FaPaw, FaDog, FaCat, FaWeight, FaCalendarAlt, F
 import { uploadImageToCloudinary } from "../utils/uploadUtils";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../style/pet-form.css";
-import "../style/flex-card.css"; // Import CSS chung cho flexbox
+import "../style/petForm.css";
+import "../style/flexCard.css"; // Import CSS chung cho flexbox
 import Loading from "../components/Loading";
 import axiosInstance from "../utils/axiosConfig";
 
