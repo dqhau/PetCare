@@ -331,11 +331,10 @@ const OnlineBooking = () => {
                     value={bookingData.customer_name}
                     onChange={handleInputChange}
                     isInvalid={!!errors.customer_name}
-                    readOnly
                   />
                   <Form.Control.Feedback type="invalid">{errors.customer_name}</Form.Control.Feedback>
                   <Form.Text className="text-muted">
-                    Thông tin được lấy từ hồ sơ của bạn
+                    Thông tin được lấy từ hồ sơ của bạn. Bạn có thể chỉnh sửa cho lần đặt lịch này.
                   </Form.Text>
                 </Form.Group>
 
@@ -362,10 +361,9 @@ const OnlineBooking = () => {
                     name="email"
                     value={bookingData.email}
                     onChange={handleInputChange}
-                    readOnly
                   />
                   <Form.Text className="text-muted">
-                    Thông tin được lấy từ hồ sơ của bạn
+                    Thông tin được lấy từ hồ sơ của bạn. Bạn có thể chỉnh sửa cho lần đặt lịch này.
                   </Form.Text>
                 </Form.Group>
 
@@ -375,10 +373,9 @@ const OnlineBooking = () => {
                     name="address"
                     value={bookingData.address}
                     onChange={handleInputChange}
-                    readOnly
                   />
                   <Form.Text className="text-muted">
-                    Thông tin được lấy từ hồ sơ của bạn
+                    Thông tin được lấy từ hồ sơ của bạn. Bạn có thể chỉnh sửa cho lần đặt lịch này.
                   </Form.Text>
                 </Form.Group>
 
