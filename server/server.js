@@ -6,9 +6,8 @@ import express, { json } from "express";
 import connectDB from "./src/configs/database.js";
 import { startRemindBookingCronJob } from "./src/helpers/cronjob.js";
 
-// Khởi động cronjob nhắc lịch và ghi log
+// Khởi động cronjob nhắc lịch
 startRemindBookingCronJob();
-console.log("[CRONJOB] Đã kích hoạt gửi email nhắc lịch khám mỗi ngày lúc 7h sáng.");
 
 // Import core routes
 import mainRouter from "./src/routes/index.js";

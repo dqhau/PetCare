@@ -2,6 +2,7 @@ import Booking from "../models/booking.js";
 import Timeslot from "../models/timeslot.js";
 import User from "../models/user.js";
 import createError from "http-errors";
+import mongoose from "mongoose";
 
 /**
  * Dịch vụ xử lý logic liên quan đến booking
@@ -379,7 +380,42 @@ const bookingService = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+  /**
+   * Lấy danh sách tất cả các booking với bộ lọc
+   * @param {Object} filters - Các điều kiện lọc
+   * @param {string} filters.service_type - ID của dịch vụ cần lọc
+   * @param {string} filters.status - Trạng thái booking cần lọc
+   * @returns {Promise<Array>} Danh sách booking đã lọc
+   */
+  async getAllBookingsWithFilters(filters = {}) {
+    try {
+      const query = {};
+
+      // Lọc theo trạng thái nếu có và khác 'All'
+      if (filters.status && filters.status !== 'All') {
+        query.order_status = filters.status;
+      }
+
+      // Lọc theo service_type nếu có và khác 'All'
+      if (filters.service_type && filters.service_type !== 'All') {
+        query.service_type = mongoose.Types.ObjectId(filters.service_type);
+      }
+
+      return await Booking.find(query)
+        .populate("service_type")
+        .populate("petId")
+        .populate("timeslot")
+        .populate("userId", "username fullname email")
+        .sort({ appointment_date: -1 })
+        .exec();
+    } catch (error) {
+      throw new Error(error.toString());
+    }
+  },
+
+
 };
 
 export default bookingService;

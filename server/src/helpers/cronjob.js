@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import Booking from '../models/booking.js';
-import { sendEmail } from './email.js';
+import { sendEmail, generateReminderEmailTemplate } from './email.js';
 import cron from 'node-cron';
 
 /**
@@ -15,18 +15,21 @@ export async function sendRemindEmails() {
     const endOfTomorrow = new Date(tomorrow);
     endOfTomorrow.setHours(23, 59, 59, 999);
 
-    // Lấy tất cả booking có lịch hẹn vào ngày mai và chưa bị huỷ
+    // Lấy tất cả booking có lịch hẹn vào ngày mai và đang trong trạng thái xử lý
     const bookings = await Booking.find({
-      order_status: { $nin: ['Cancel'] },
-      date: { $gte: tomorrow, $lte: endOfTomorrow },
-    }).populate('userId');
+      order_status: 'Processing',
+      appointment_date: {
+        $gte: tomorrow,
+        $lte: endOfTomorrow
+      }
+    }).populate('userId').populate('service_type').populate('timeslot');
 
     for (const booking of bookings) {
       const email = booking.userId?.email || booking.email;
       if (!email) continue;
-      const subject = 'Nhắc lịch khám thú cưng - PetCare';
-      const content = `Xin chào,\n\nBạn có lịch khám thú cưng vào ngày ${booking.date.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}.\n\nVui lòng kiểm tra lại thông tin trên hệ thống PetCare.`;
-      await sendEmail(email, subject, content, false);
+      const subject = '🐾 Nhắc Lịch Khám Thú Cưng - PetCare';
+      const content = generateReminderEmailTemplate(booking);
+      await sendEmail(email, subject, content, true);
     }
     console.log(`Đã gửi nhắc lịch cho ${bookings.length} booking ngày mai.`);
   } catch (err) {
@@ -47,11 +50,11 @@ export function startRemindBookingCronJob() {
   //   |   |   +----------- Ngày trong tháng (1 - 31)
   //   |   +--------------- Giờ (0 - 23)
   //   +------------------- Phút (0 - 59)
-  // Lịch này nghĩa là: Vào 07:00 sáng mỗi ngày (giờ Việt Nam), sẽ chạy hàm sendRemindEmails
-  cron.schedule('24 21 * * *', sendRemindEmails, {
+  // Lịch này nghĩa là: Vào 6:00 chiều mỗi ngày (giờ Việt Nam), sẽ chạy hàm sendRemindEmails
+  cron.schedule('0 18 * * *', sendRemindEmails, {
     timezone: 'Asia/Ho_Chi_Minh',
   });
-  console.log('Đã lên lịch gửi email nhắc lịch khám mỗi ngày lúc 7h sáng.');
+  console.log("[CRONJOB] Đã kích hoạt gửi email nhắc lịch hẹn mỗi ngày lúc 6h chiều.");
 }
 
 

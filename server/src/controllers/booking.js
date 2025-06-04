@@ -6,6 +6,7 @@ import User from "../models/user.js";
 import bookingService from "../services/booking.js";
 import notificationService from "../services/notification.js";
 import createError from "http-errors";
+import mongoose from "mongoose";
 
 // Lấy tổng số dịch vụ đã book
 const getTotalServices = async (req, res) => {
@@ -119,14 +120,33 @@ const getAllBookings = async (req, res, next) => {
     const User = await import("../models/user.js").then(m => m.default);
     const user = await User.findById(userId);
     const userRole = user ? user.role : null;
-    
 
+    // Lấy các tham số lọc từ query string
+    const { service_type, status } = req.query;
     
     let bookings;
     
-    // Nếu là admin, lấy tất cả booking
+    // Nếu là admin, lấy tất cả booking với bộ lọc
     if (userRole === 'admin') {
-      bookings = await bookingService.getAllBookings();
+      const query = {};
+      
+      // Lọc theo trạng thái nếu có và khác 'All'
+      if (status && status !== 'All') {
+        query.order_status = status;
+      }
+
+      // Lọc theo service_type nếu có và khác 'All'
+      if (service_type && service_type !== 'All') {
+        query.service_type = new mongoose.Types.ObjectId(service_type);
+      }
+
+      bookings = await Booking.find(query)
+        .populate("service_type")
+        .populate("petId")
+        .populate("timeslot")
+        .populate("userId", "username fullname email")
+        .sort({ appointment_date: -1 })
+        .exec();
     } 
     // Nếu là user, chỉ lấy booking của user đó
     else if (userId) {
@@ -134,7 +154,6 @@ const getAllBookings = async (req, res, next) => {
     } 
     // Nếu không có thông tin xác thực
     else {
-
       return res.status(403).json({ error: "Bạn không có quyền truy cập" });
     }
     
@@ -242,8 +261,29 @@ const getBookingsByUserAndStatus = async (req, res, next) => {
   }
 };
 
-// Lấy danh sách booking theo userId
-
+// Lấy danh sách booking theo dịch vụ
+const getBookingsByService = async (req, res, next) => {
+  try {
+    const { serviceId } = req.params;
+    const bookings = await bookingService.getBookingsByService(serviceId);
+    
+    // Xử lý dữ liệu trước khi trả về
+    const processedBookings = bookings.map(booking => {
+      return {
+        ...booking.toObject(),
+        service_type: booking.service_type || { name: 'Không có thông tin' }
+      };
+    });
+    
+    res.status(200).json(processedBookings || []);
+  } catch (error) {
+    console.error("Error fetching bookings by service:", error);
+    res.status(500).json({ 
+      error: "Không thể lấy danh sách đặt lịch", 
+      message: error.message 
+    });
+  }
+};
 
 // Thêm booking mới
 const createBooking = async (req, res, next) => {
@@ -548,5 +588,6 @@ export default {
   updateBooking,
   deleteBooking,
   updateBookingStatusWithHistory,
-  changeTimeslot
+  changeTimeslot,
+  getBookingsByService
 };
