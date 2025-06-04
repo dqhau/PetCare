@@ -27,15 +27,7 @@ const getRevenueServices = async (req, res, next) => {
   }
 };
 
-// Tổng tiền theo từng loại dịch vụ
-const getRevenueByServiceType = async (req, res, next) => {
-  try {
-    const revenueByServiceType = await bookingService.getRevenueByServiceType();
-    res.status(200).json({ revenueByServiceType });
-  } catch (error) {
-    next(error);
-  }
-};
+
 
 // Lấy số lượng giống đực và cái làm dịch vụ
 const getPetBreeds = async (req, res) => {
@@ -545,8 +537,6 @@ const changeTimeslot = async (req, res, next) => {
 export default {
   getTotalServices,
   getRevenueServices,
-  getRevenueByServiceType,
-  getPetBreeds,
   getBookingsByUser,
   getBookingById,
   getBookingStatsByStatus,

@@ -45,69 +45,6 @@ const bookingService = {
   },
 
   /**
-   * Tổng tiền theo từng loại dịch vụ
-   * @returns {Promise<Object>} Tổng tiền theo từng loại dịch vụ
-   */
-  async getRevenueByServiceType() {
-    try {
-      const completedBookings = await Booking.find({ order_status: "Completed" })
-        .populate("service_type")
-        .exec();
-      
-      const revenueByServiceType = completedBookings.reduce(
-        (accumulator, booking) => {
-          const serviceName = booking.service_type.name;
-          const servicePrice = booking.service_type.price;
-
-          if (!accumulator[serviceName]) {
-            accumulator[serviceName] = 0;
-          }
-
-          accumulator[serviceName] += servicePrice;
-          return accumulator;
-        },
-        {}
-      );
-
-      return revenueByServiceType;
-    } catch (error) {
-      throw new Error(error.toString());
-    }
-  },
-
-  /**
-   * Lấy số lượng giống đực và cái làm dịch vụ
-   * @returns {Promise<Object>} Số lượng giống đực và cái
-   */
-  async getPetBreeds() {
-    try {
-      const bookings = await Booking.find({ order_status: { $ne: "Cancel" } })
-        .populate({
-          path: "petId",
-          select: "gender"
-        })
-        .exec();
-
-      let maleCount = 0;
-      let femaleCount = 0;
-
-      bookings.forEach(booking => {
-        if (booking.petId && booking.petId.gender) {
-          if (booking.petId.gender === "Đực") {
-            maleCount++;
-          } else if (booking.petId.gender === "Cái") {
-            femaleCount++;
-          }
-        }
-      });
-
-      return { maleCount, femaleCount };
-    } catch (error) {
-      throw new Error(error.toString());
-    }
-  },
-
-  /**
    * Lấy danh sách tất cả các booking theo user
    * @param {string} userId - ID người dùng
    * @returns {Promise<Array>} Danh sách booking
@@ -145,33 +82,9 @@ const bookingService = {
         throw createError.NotFound("Không tìm thấy booking với ID đã cung cấp");
       }
 
-      return this.processBookingData(booking);
+      return booking;
     } catch (error) {
       throw error;
-    }
-  },
-
-  /**
-   * Xử lý dữ liệu booking trước khi trả về cho client
-   * @param {Object} booking - Booking object từ database
-   * @returns {Object} Booking object đã xử lý
-   */
-  processBookingData(booking) {
-    try {
-      // Chuyển đổi Mongoose document thành plain object
-      const bookingData = booking.toObject ? booking.toObject() : booking;
-      
-      // Đảm bảo các trường cần thiết có sẵn
-      return {
-        ...bookingData,
-        order_status: bookingData.order_status || 'Pending',
-        service_type: bookingData.service_type || { name: 'Không có thông tin' },
-        timeslot: bookingData.timeslot || { time: 'Không có thông tin' },
-        petId: bookingData.petId || { name: 'Không có thông tin' }
-      };
-    } catch (error) {
-      console.error('Error processing booking data:', error);
-      throw new Error('Lỗi xử lý dữ liệu booking: ' + error.message);
     }
   },
 
