@@ -18,7 +18,7 @@ usersRouter.get('/', userController.getAllUsers);
 usersRouter.put('/:username', userController.updateUser);
 usersRouter.get("/:username", userController.getUserByUserName);
 usersRouter.put("/changepass/:username", userController.changePass);
-usersRouter.post("/forgot-password", userController.forgetPass);
+usersRouter.post("/forgot-password", userController.forgotPassword);
 usersRouter.delete("/delete/:id", verifyAccessToken, userController.deleteUser);
 
 // Đặt lại mật khẩu - Sử dụng authController

@@ -43,13 +43,28 @@ const getNotificationsByUserId = async (req, res) => {
 // Đánh dấu thông báo đã đọc
 const markAsRead = async (req, res) => {
   try {
-    const notification = await notificationService.markAsRead(req.params.id);
+    if (!req.payload || !req.payload.user) {
+      return res.status(401).json({ message: "Bạn chưa đăng nhập" });
+    }
+
+    const userId = req.payload.user.id;
+    const userRole = req.payload.user.role;
+
+    // Lấy thông tin thông báo
+    const notification = await notificationService.getNotificationById(req.params.id);
     
     if (!notification) {
       return res.status(404).json({ message: "Không tìm thấy thông báo" });
     }
 
-    res.status(200).json(notification);
+    // Kiểm tra quyền: admin có thể đánh dấu mọi thông báo, user chỉ có thể đánh dấu thông báo của mình
+    if (userRole !== 'admin' && notification.userId && notification.userId.toString() !== userId) {
+      return res.status(403).json({ message: "Bạn không có quyền thực hiện hành động này" });
+    }
+
+    // Đánh dấu đã đọc
+    const updatedNotification = await notificationService.markAsRead(req.params.id);
+    res.status(200).json(updatedNotification);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

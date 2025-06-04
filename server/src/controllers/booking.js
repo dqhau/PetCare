@@ -67,8 +67,9 @@ const getBookingsByUser = async (req, res) => {
         } : null,
         timeslot: timeslot ? {
           _id: timeslot._id,
-          start_time: timeslot.start_time,
-          end_time: timeslot.end_time
+          time: timeslot.time,
+          maxSlots: timeslot.maxSlots,
+          availableSlots: timeslot.availableSlots
         } : null
       };
     });

@@ -24,8 +24,17 @@ const storage = new CloudinaryStorage({
 // Tạo middleware upload
 const uploadCloud = multer({ storage });
 
+// Function to upload image
+const uploadImage = async (imagePath) => {
+  try {
+    const result = await cloudinary.uploader.upload(imagePath, {
+      folder: 'petcare',
+    });
+    return result;
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw error;
+  }
+};
 
-
-
-
-export { uploadCloud, uploadImage, deleteImage, cloudinary };
+export { uploadCloud, uploadImage, cloudinary };

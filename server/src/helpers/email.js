@@ -4,7 +4,11 @@ dotenv.config();
 // Tạo transporter cho Nodemailer (sử dụng cấu hình giống như trong users.js)
 const createTransporter = () => {
   // Log để debug
-
+  console.log('Cấu hình email service:', {
+    service: process.env.EMAIL_SERVICE,
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS ? '***' : undefined
+  });
   
   return nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE,
@@ -27,6 +31,7 @@ const createTransporter = () => {
  */
 export const sendEmail = async (to, subject, content, isHtml = true) => {
   try {    
+    console.log('Bắt đầu gửi email đến:', to);
     const transporter = createTransporter();
     
     // Thêm các header giúp tránh bị đánh dấu là spam
@@ -50,11 +55,18 @@ export const sendEmail = async (to, subject, content, isHtml = true) => {
       mailOptions.text = content;
     }
 
+    console.log('Chuẩn bị gửi email với options:', {
+      from: mailOptions.from,
+      to: mailOptions.to,
+      subject: mailOptions.subject
+    });
+
     const info = await transporter.sendMail(mailOptions);
+    console.log('Email đã được gửi thành công:', info);
 
     return { status: "Success", info };
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("Lỗi khi gửi email:", error);
     return { status: "Error", error: error.message };
   }
 };

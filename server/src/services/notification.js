@@ -32,6 +32,15 @@ const notificationService = {
   },
 
   /**
+   * Lấy thông tin một thông báo theo ID
+   * @param {string} id - ID thông báo
+   * @returns {Promise<Object>} Thông tin thông báo
+   */
+  async getNotificationById(id) {
+    return await Notification.findById(id);
+  },
+
+  /**
    * Đánh dấu thông báo đã đọc
    * @param {string} id - ID thông báo
    * @returns {Promise<Object>} Thông báo đã cập nhật

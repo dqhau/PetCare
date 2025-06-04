@@ -15,7 +15,7 @@ export async function sendRemindEmails() {
     const endOfTomorrow = new Date(tomorrow);
     endOfTomorrow.setHours(23, 59, 59, 999);
 
-    // Lấy tất cả booking có lịch khám vào ngày mai và chưa bị huỷ
+    // Lấy tất cả booking có lịch hẹn vào ngày mai và chưa bị huỷ
     const bookings = await Booking.find({
       order_status: { $nin: ['Cancel'] },
       date: { $gte: tomorrow, $lte: endOfTomorrow },
@@ -48,7 +48,7 @@ export function startRemindBookingCronJob() {
   //   |   +--------------- Giờ (0 - 23)
   //   +------------------- Phút (0 - 59)
   // Lịch này nghĩa là: Vào 07:00 sáng mỗi ngày (giờ Việt Nam), sẽ chạy hàm sendRemindEmails
-  cron.schedule('0 7 * * *', sendRemindEmails, {
+  cron.schedule('24 21 * * *', sendRemindEmails, {
     timezone: 'Asia/Ho_Chi_Minh',
   });
   console.log('Đã lên lịch gửi email nhắc lịch khám mỗi ngày lúc 7h sáng.');

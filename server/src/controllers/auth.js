@@ -24,7 +24,6 @@ const authController = {
           id: savedUser._id,
           username: savedUser.username,
           fullname: savedUser.fullname,
-          email: savedUser.email,
           role: savedUser.role
         }
       });

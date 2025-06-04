@@ -1,5 +1,5 @@
 import express from 'express';
-import { uploadCloud, deleteImage } from '../configs/cloudinary.js';
+import { uploadCloud} from '../configs/cloudinary.js';
 import { verifyAccessToken } from '../middleware/authMiddleware.js';
 
 const uploadRouter = express.Router();
@@ -20,23 +20,6 @@ uploadRouter.post('/image', verifyAccessToken, uploadCloud.single('image'), (req
   } catch (error) {
     console.error('Upload error:', error);
     res.status(500).json({ error: 'Không thể tải ảnh lên' });
-  }
-});
-
-// Xóa ảnh theo publicId
-uploadRouter.delete('/image/:publicId', verifyAccessToken, async (req, res) => {
-  try {
-    const { publicId } = req.params;
-    const result = await deleteImage(publicId);
-    
-    if (result.result === 'ok') {
-      res.status(200).json({ message: 'Xóa ảnh thành công' });
-    } else {
-      res.status(400).json({ error: 'Không thể xóa ảnh' });
-    }
-  } catch (error) {
-    console.error('Delete image error:', error);
-    res.status(500).json({ error: 'Không thể xóa ảnh' });
   }
 });
 
