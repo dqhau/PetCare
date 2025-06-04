@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from './axiosConfig';
 
 /**
  * Upload ảnh lên Cloudinary và trả về URL của ảnh
@@ -12,13 +12,12 @@ export const uploadImageToCloudinary = async (file) => {
   formData.append("image", file);
   
   try {
-    const response = await axios.post(
-      "http://localhost:9999/upload/image",
+    const response = await axiosInstance.post(
+      "/upload/image",
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          'Content-Type': 'multipart/form-data'
         }
       }
     );

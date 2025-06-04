@@ -1,24 +1,25 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import HomePage from "./layout/homePage";
-import OnlineBooking from "./screens/onlineBooking";
-import ContactForm from "./screens/Contact";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import HomePage from "./pages/home/HomePage";
+import OnlineBooking from "./pages/booking/onlineBooking";
+import ContactForm from "./pages/contact/Contact";
+import Header from "./components/layout/Header";
+import Footer from "./components/layout/Footer";
 import { ToastContainer } from "react-toastify";
-import DashBoard from "./Admin/DashBoard";
-import Profile from "./screens/Profile";
-import EditProfile from "./screens/EditProfile";
-import Grooming from "./screens/Grooming";
-import MyPets from "./screens/MyPets";
-import UserBookings from "./screens/UserBookings";
-import LoginForm from "./screens/LoginForm";
-import RegisterForm from "./screens/RegisterForm";
-import ChangePassword from "./screens/changePassword";
-import ForgotPassword from "./screens/forgotPassword";
-import ResetPass from "./screens/ResetPass";
-import VaccinationHistoryUser from "./components/VaccinationHistory/VaccinationHistoryUser";
+import DashBoard from "./pages/admin/DashBoard";
+import Profile from "./pages/profile/Profile";
+import EditProfile from "./pages/profile/EditProfile";
+import Grooming from "./pages/booking/Grooming";
+import MyPets from "./pages/pets/MyPets";
+import UserBookings from "./pages/booking/UserBookings";
+import LoginForm from "./pages/auth/LoginForm";
+import RegisterForm from "./pages/auth/RegisterForm";
+import ChangePassword from "./pages/profile/changePassword";
+import ForgotPassword from "./pages/auth/forgotPassword";
+import ResetPass from "./pages/auth/ResetPass";
+// import VaccinationHistoryUser from "./pages/booking/VaccinationHistoryUser";
+// File này hiện không tồn tại trong dự án
 
 function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -100,7 +101,7 @@ function AppContent() {
           <Route path="/booking-status" element={<UserBookings />} />
           <Route path="/my-bookings" element={<UserBookings />} />
           <Route path="/pets" element={<MyPets />} />
-          <Route path="/vaccination-history" element={<VaccinationHistoryUser />} />
+          {/* <Route path="/vaccination-history" element={<VaccinationHistoryUser />} /> */}
         </Routes>
         <ToastContainer />
       </div>
