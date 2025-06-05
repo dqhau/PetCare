@@ -1,4 +1,3 @@
-import React from "react";
 import { Container, Row, Col, Card, Breadcrumb } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Footer from "../../components/layout/Footer";

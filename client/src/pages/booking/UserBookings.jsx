@@ -391,18 +391,18 @@ const UserBookings = () => {
     const dialogFooter = (
       <div className="d-flex justify-content-end gap-2 mt-4">
         <Button 
-          label="Không, giữ lại" 
-          icon="pi pi-times" 
-          onClick={() => setShowCancelDialog(false)} 
-          className="p-button-text"
-        />
+          variant="secondary"
+          onClick={() => setShowCancelDialog(false)}
+        >
+          Không, giữ lại
+        </Button>
         <Button 
-          label="Xác nhận hủy" 
-          icon="pi pi-check" 
-          onClick={handleCancelBooking} 
+          variant="danger"
+          onClick={handleCancelBooking}
           disabled={loading}
-          className="p-button-danger" 
-        />
+        >
+          Xác nhận hủy
+        </Button>
       </div>
     );
     

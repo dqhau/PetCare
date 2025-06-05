@@ -245,7 +245,7 @@ function MyPets() {
     const petData = {
       ...currentPet,
       image: imageUrl,
-      owner: userId
+      userId: userId
     };
 
     try {
@@ -439,7 +439,7 @@ function MyPets() {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={handleSubmitPet} className="pet-form">
+          <Form id="petForm" onSubmit={handleSubmitPet} className="pet-form">
             <Row>
               <Col md={7}>
                 <Form.Group className="mb-3">
@@ -630,7 +630,8 @@ function MyPets() {
           </Button>
           <Button 
             variant="success" 
-            onClick={handleSubmitPet}
+            type="submit"
+            form="petForm"
             className="pet-form-btn pet-form-btn-submit"
             disabled={isUploading}
           >

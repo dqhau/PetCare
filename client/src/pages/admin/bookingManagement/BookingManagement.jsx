@@ -598,7 +598,7 @@ const BookingManagement = () => {
           fetchTimeslotsByDate={fetchTimeslotsByDate}
         />
 
-        <style jsx>{`
+        <style>{`
           .booking-management-wrapper {
             width: 100%;
             min-height: 100vh;

@@ -14,7 +14,7 @@ const petSchema = new Schema(
       type: String,
     },
     age: {
-      type: Number,
+      type: String,
     },
     gender: {
       type: String,

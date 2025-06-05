@@ -18,7 +18,7 @@ const Banner = () => {
           </div>
           <div className="d-flex align-items-center mt-4">
             <Link
-              to="/online-booking"
+              to="/grooming"
               className="btn btn-primary rounded-pill mr-3"
             >
               <span className="font-weight-bolder text-white">XEM THÊM</span>

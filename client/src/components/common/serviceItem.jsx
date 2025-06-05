@@ -1,15 +1,19 @@
 import React, { useState } from "react";
-import { Card, Col, Row } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import { SuitHeart } from "react-bootstrap-icons";
+import { useNavigate } from "react-router-dom";
 
 const ServiceItem = ({ title, image, description, price, onBookNow }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <Card
       className="h-100"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => navigate("/grooming")}
+      style={{ cursor: "pointer" }}
     >
       <div className="text-center pt-3">
         <Card.Img
@@ -30,6 +34,10 @@ const ServiceItem = ({ title, image, description, price, onBookNow }) => {
           <Card.Link 
             href="#"
             className="w-100"
+            onClick={(e) => {
+              e.stopPropagation();
+              onBookNow();
+            }}
           >
             Đặt Lịch Ngay
           </Card.Link>
