@@ -18,6 +18,10 @@ const bookingSchema = new mongoose.Schema(
       ref: "Service", // Tham chiếu đến model Service
       required: true,
     },
+    price_at_booking: {
+      type: Number,
+      required: true,
+    },
     customer_name: {
       type: String,
       required: true,

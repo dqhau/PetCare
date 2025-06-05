@@ -307,13 +307,16 @@ const createBooking = async (req, res, next) => {
     
     // Ưu tiên sử dụng userId từ token, nếu không có thì sử dụng userId từ request body
     const userId = tokenUserId || bodyUserId;
-    
-
 
     // 1. Validate bắt buộc
-
     if (!timeslotId) {
       return res.status(400).json({ error: "Missing timeslotId" });
+    }
+    
+    // Kiểm tra và lấy thông tin dịch vụ
+    const serviceInfo = await Service.findById(service_type);
+    if (!serviceInfo) {
+      return res.status(400).json({ error: "Service not found" });
     }
     
     // Kiểm tra ngày đặt lịch
@@ -377,6 +380,7 @@ const createBooking = async (req, res, next) => {
     const bookingData = {
       userId,
       service_type,
+      price_at_booking: serviceInfo.price, // Lưu giá tại thời điểm đặt lịch
       customer_name,
       phone_number,
       email,
@@ -391,7 +395,6 @@ const createBooking = async (req, res, next) => {
     const savedBooking = await bookingService.createBooking(bookingData, timeslot);
     
     // 6. Chỉ tạo thông báo cho admin
-    const serviceInfo = await Service.findById(service_type);
     const serviceName = serviceInfo ? serviceInfo.name : 'Không xác định';
     const bookingDate = new Date(appointment_date).toLocaleDateString('vi-VN');
     const bookingTime = timeslot.time;
@@ -405,28 +408,11 @@ const createBooking = async (req, res, next) => {
     };
     
     await notificationService.createNotification(notificationData);
-    
-    // Tạo thông báo cho user nếu đã đăng nhập
-    if (userId) {
-      try {
-        const userNotificationData = {
-          type: 'booking',
-          message: `Bạn đã đặt lịch dịch vụ ${serviceName} vào ngày ${bookingDate} lúc ${bookingTime}h thành công. Chúng tôi sẽ xử lý lịch của bạn sớm nhất có thể.`,
-          relatedId: savedBooking._id,
-          userId: userId // Thông báo cho user
-        };
-        
-        await notificationService.createNotification(userNotificationData);
 
-      } catch (notificationError) {
-        console.error('Lỗi khi tạo thông báo cho user:', notificationError);
-        // Không throw error để không ảnh hưởng đến việc tạo booking
-      }
-    }
-
+    // Trả về kết quả
     res.status(201).json(savedBooking);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 

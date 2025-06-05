@@ -12,6 +12,7 @@ const OnlineBooking = () => {
   const [services, setServices] = useState([]);
   const [slots, setSlots] = useState([]);
   const [errors, setErrors] = useState({});
+  const [selectedService, setSelectedService] = useState(null);
   const toast = useRef(null);
   const [showSlots, setShowSlots] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +46,14 @@ const OnlineBooking = () => {
   useEffect(() => {
     setIsLoading(true);
     serviceService.getAllServices()
-      .then((res) => setServices(res.data))
+      .then((res) => {
+        setServices(res.data);
+        // Nếu có service_type trong bookingData, tìm và set selectedService
+        if (bookingData.service_type) {
+          const selected = res.data.find(s => s._id === bookingData.service_type);
+          setSelectedService(selected);
+        }
+      })
       .catch(() => {
         toast.current?.show({
           severity: 'error',
@@ -146,6 +154,10 @@ const OnlineBooking = () => {
   // Handle top-level form changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === "service_type") {
+      const selected = services.find(s => s._id === value);
+      setSelectedService(selected);
+    }
     if (name === "petId") {
       // chọn pet có sẵn: reset pet_info
       setBookingData((prev) => ({
@@ -290,6 +302,11 @@ const OnlineBooking = () => {
                     ))}
                   </Form.Control>
                   <Form.Control.Feedback type="invalid">{errors.service_type}</Form.Control.Feedback>
+                  {selectedService && (
+                    <Form.Text className="text-primary mt-2">
+                      Giá dịch vụ: {selectedService.price?.toLocaleString('vi-VN')} VNĐ
+                    </Form.Text>
+                  )}
                 </Form.Group>
                 
                 {/* Chọn thú cưng */}

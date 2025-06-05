@@ -132,7 +132,7 @@ const BookingDetails = ({
                 </tr>
                 <tr>
                   <td className="fw-bold">Giá:</td>
-                  <td>{viewBooking.service_type?.price?.toLocaleString('vi-VN')} VNĐ</td>
+                  <td>{viewBooking.price_at_booking?.toLocaleString('vi-VN')} VNĐ</td>
                 </tr>
                 <tr>
                   <td className="fw-bold">Ngày hẹn:</td>

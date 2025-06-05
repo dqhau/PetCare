@@ -335,7 +335,7 @@ const UserBookings = () => {
                   <strong>Dịch vụ:</strong> {viewBooking.service_type?.name || 'N/A'}
                 </div>
                 <div className="detail-row">
-                  <strong>Giá:</strong> {viewBooking.service_type?.price?.toLocaleString('vi-VN')} VNĐ
+                  <strong>Giá:</strong> {viewBooking.price_at_booking?.toLocaleString('vi-VN')} VNĐ
                 </div>
                 <div className="detail-row">
                   <strong>Tên thú cưng:</strong> {viewBooking.petId?.name || 'N/A'}

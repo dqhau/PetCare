@@ -71,10 +71,7 @@ const statisticsService = {
         .exec();
       
       const totalRevenue = completedBookingsWithService.reduce((total, booking) => {
-        if (booking.service_type && booking.service_type.price) {
-          return total + booking.service_type.price;
-        }
-        return total;
+        return total + (booking.price_at_booking || 0);
       }, 0);
       
       // Lấy top 5 dịch vụ được đặt nhiều nhất

@@ -126,6 +126,16 @@ const BookingManagement = () => {
       );
     }
 
+    // Sắp xếp theo thời gian tạo và ngày hẹn (mới nhất lên đầu)
+    filtered.sort((a, b) => {
+      // Nếu cùng ngày hẹn thì sắp xếp theo thời gian tạo
+      if (a.appointment_date === b.appointment_date) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+      // Nếu khác ngày hẹn thì sắp xếp theo ngày hẹn
+      return new Date(b.appointment_date) - new Date(a.appointment_date);
+    });
+
     return filtered;
   };
   
@@ -498,7 +508,7 @@ const BookingManagement = () => {
                   </tr>
                   <tr>
                     <td className="fw-bold">Giá:</td>
-                    <td>{viewBooking.service_type?.price?.toLocaleString('vi-VN')} VNĐ</td>
+                    <td>{viewBooking.price_at_booking?.toLocaleString('vi-VN')} VNĐ</td>
                   </tr>
                   <tr>
                     <td className="fw-bold">Ngày hẹn:</td>
