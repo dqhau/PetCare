@@ -28,6 +28,14 @@ const OnlineBooking = () => {
     appointment_date: "",
     timeslotId: "",
     userId: "",
+    pet_info: {
+      pet_name: "",
+      species: "",
+      breed: "",
+      age: "",
+      weight: "",
+      notes: ""
+    }
   });
   
   // State for user profile
@@ -182,12 +190,23 @@ const OnlineBooking = () => {
   const validate = () => {
     const newErrors = {};
     if (!bookingData.service_type) newErrors.service_type = "Yêu cầu dịch vụ là bắt buộc";
-    if (!bookingData.petId) newErrors.petId = "Vui lòng chọn thú cưng";
     if (!bookingData.description) newErrors.description = "Mô tả tình trạng/yêu cầu là bắt buộc";
     if (!bookingData.customer_name) newErrors.customer_name = "Họ và tên là bắt buộc";
     if (!bookingData.phone_number) newErrors.phone_number = "Số điện thoại là bắt buộc";
     if (!bookingData.appointment_date) newErrors.appointment_date = "Ngày hẹn là bắt buộc";
     if (!bookingData.timeslotId) newErrors.timeslotId = "Vui lòng chọn khung giờ";
+
+    // Validate pet info based on login status
+    if (userId) {
+      if (!bookingData.petId) newErrors.petId = "Vui lòng chọn thú cưng";
+    } else {
+      if (!bookingData.pet_info.pet_name) newErrors.pet_name = "Tên thú cưng là bắt buộc";
+      if (!bookingData.pet_info.species) newErrors.species = "Loài thú cưng là bắt buộc";
+      if (!bookingData.pet_info.breed) newErrors.breed = "Giống thú cưng là bắt buộc";
+      if (!bookingData.pet_info.age) newErrors.age = "Tuổi thú cưng là bắt buộc";
+      if (!bookingData.pet_info.weight) newErrors.weight = "Cân nặng thú cưng là bắt buộc";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -209,7 +228,6 @@ const OnlineBooking = () => {
       
       const payload = {
         service_type: bookingData.service_type,
-        petId: bookingData.petId,
         description: bookingData.description,
         customer_name: bookingData.customer_name,
         phone_number: bookingData.phone_number,
@@ -217,8 +235,15 @@ const OnlineBooking = () => {
         address: bookingData.address,
         appointment_date: bookingData.appointment_date,
         timeslotId: bookingData.timeslotId,
-        userId: bookingData.userId
       };
+
+      // Add pet info based on login status
+      if (userId) {
+        payload.userId = userId;
+        payload.petId = bookingData.petId;
+      } else {
+        payload.pet_info = bookingData.pet_info;
+      }
       
       await bookingService.createBooking(payload);
       
@@ -240,7 +265,15 @@ const OnlineBooking = () => {
         address: userProfile?.address || "",
         appointment_date: "",
         timeslotId: "",
-        userId,
+        userId: userId || "",
+        pet_info: {
+          pet_name: "",
+          species: "",
+          breed: "",
+          age: "",
+          weight: "",
+          notes: ""
+        }
       });
       setShowSlots(false);
       setSlots([]);
@@ -311,31 +344,164 @@ const OnlineBooking = () => {
                 
                 {/* Chọn thú cưng */}
                 <Form.Group controlId="petId">
-                  <Form.Label>Chọn thú cưng</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="petId"
-                    value={bookingData.petId}
-                    onChange={handleInputChange}
-                    isInvalid={!!errors.petId}
-                  >
-                    <option value="">-- Chọn thú cưng --</option>
-                    {loadingPets ? (
-                      <option value="" disabled>Đang tải danh sách thú cưng...</option>
-                    ) : Array.isArray(pets) && pets.length > 0 ? (
-                      pets.map((p) => (
-                        <option key={p._id} value={p._id}>
-                          {p.name} ({p.species} - {p.breed})
-                        </option>
-                      ))
-                    ) : (
-                      <option value="" disabled>Bạn chưa có thú cưng nào. Vui lòng thêm thú cưng trước.</option>
+                  <Form.Label>
+                    Thông tin thú cưng
+                    {!userId && (
+                      <span className="text-muted ms-2">
+                        (Bạn có thể <a href="/login">đăng nhập</a> để sử dụng thông tin thú cưng đã lưu)
+                      </span>
                     )}
-                  </Form.Control>
-                  <Form.Control.Feedback type="invalid">{errors.petId}</Form.Control.Feedback>
-                  {pets.length === 0 && !loadingPets && (
-                    <div className="text-danger mt-2">
-                      <small>Bạn chưa có thú cưng nào. Vui lòng thêm thú cưng trước khi đặt lịch.</small>
+                  </Form.Label>
+                  {userId ? (
+                    <>
+                      <Form.Control
+                        as="select"
+                        name="petId"
+                        value={bookingData.petId}
+                        onChange={handleInputChange}
+                        isInvalid={!!errors.petId}
+                      >
+                        <option value="">-- Chọn thú cưng --</option>
+                        {loadingPets ? (
+                          <option value="" disabled>Đang tải danh sách thú cưng...</option>
+                        ) : Array.isArray(pets) && pets.length > 0 ? (
+                          pets.map((p) => (
+                            <option key={p._id} value={p._id}>
+                              {p.name} ({p.species} - {p.breed})
+                            </option>
+                          ))
+                        ) : (
+                          <option value="" disabled>Bạn chưa có thú cưng nào. Vui lòng thêm thú cưng trước.</option>
+                        )}
+                      </Form.Control>
+                      <Form.Control.Feedback type="invalid">{errors.petId}</Form.Control.Feedback>
+                      {pets.length === 0 && !loadingPets && (
+                        <div className="text-danger mt-2">
+                          <small>Bạn chưa có thú cưng nào. Vui lòng thêm thú cưng trước khi đặt lịch.</small>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="guest-pet-info">
+                      <Row>
+                        <Col md={6}>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Tên thú cưng</Form.Label>
+                            <Form.Control
+                              type="text"
+                              name="pet_name"
+                              value={bookingData.pet_info.pet_name}
+                              onChange={(e) => setBookingData(prev => ({
+                                ...prev,
+                                pet_info: {
+                                  ...prev.pet_info,
+                                  pet_name: e.target.value
+                                }
+                              }))}
+                              isInvalid={!!errors.pet_name}
+                            />
+                            <Form.Control.Feedback type="invalid">{errors.pet_name}</Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Loài</Form.Label>
+                            <Form.Control
+                              type="text"
+                              name="species"
+                              value={bookingData.pet_info.species}
+                              onChange={(e) => setBookingData(prev => ({
+                                ...prev,
+                                pet_info: {
+                                  ...prev.pet_info,
+                                  species: e.target.value
+                                }
+                              }))}
+                              isInvalid={!!errors.species}
+                            />
+                            <Form.Control.Feedback type="invalid">{errors.species}</Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md={6}>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Giống</Form.Label>
+                            <Form.Control
+                              type="text"
+                              name="breed"
+                              value={bookingData.pet_info.breed}
+                              onChange={(e) => setBookingData(prev => ({
+                                ...prev,
+                                pet_info: {
+                                  ...prev.pet_info,
+                                  breed: e.target.value
+                                }
+                              }))}
+                              isInvalid={!!errors.breed}
+                            />
+                            <Form.Control.Feedback type="invalid">{errors.breed}</Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Tuổi</Form.Label>
+                            <Form.Control
+                              type="text"
+                              name="age"
+                              value={bookingData.pet_info.age}
+                              onChange={(e) => setBookingData(prev => ({
+                                ...prev,
+                                pet_info: {
+                                  ...prev.pet_info,
+                                  age: e.target.value
+                                }
+                              }))}
+                              isInvalid={!!errors.age}
+                            />
+                            <Form.Control.Feedback type="invalid">{errors.age}</Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md={6}>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Cân nặng (kg)</Form.Label>
+                            <Form.Control
+                              type="number"
+                              name="weight"
+                              value={bookingData.pet_info.weight}
+                              onChange={(e) => setBookingData(prev => ({
+                                ...prev,
+                                pet_info: {
+                                  ...prev.pet_info,
+                                  weight: e.target.value
+                                }
+                              }))}
+                              isInvalid={!!errors.weight}
+                            />
+                            <Form.Control.Feedback type="invalid">{errors.weight}</Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Ghi chú</Form.Label>
+                            <Form.Control
+                              as="textarea"
+                              rows={3}
+                              name="notes"
+                              value={bookingData.pet_info.notes}
+                              onChange={(e) => setBookingData(prev => ({
+                                ...prev,
+                                pet_info: {
+                                  ...prev.pet_info,
+                                  notes: e.target.value
+                                }
+                              }))}
+                            />
+                          </Form.Group>
+                        </Col>
+                      </Row>
                     </div>
                   )}
                 </Form.Group>

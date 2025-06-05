@@ -6,16 +6,16 @@ const bookingSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true, // Bắt buộc phải có userId (bắt buộc đăng nhập)
+      required: false, // Không bắt buộc phải có userId
     },
     petId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Pet", // Tham chiếu đến model Pet (chỉnh sửa để khớp với tên model)
-      required: true,
+      ref: "Pet",
+      required: false, // Không bắt buộc phải có petId
     },
     service_type: {
       type: Schema.Types.ObjectId,
-      ref: "Service", // Tham chiếu đến model Service
+      ref: "Service",
       required: true,
     },
     price_at_booking: {
@@ -53,6 +53,15 @@ const bookingSchema = new mongoose.Schema(
       ref: "Timeslot",
       required: true,
     },
+    // Thêm trường pet_info cho người dùng chưa đăng nhập
+    pet_info: {
+      pet_name: { type: String },
+      species: { type: String },
+      breed: { type: String },
+      age: { type: String },
+      weight: { type: String },
+      notes: { type: String }
+    }
   },
   { timestamps: true }
 );

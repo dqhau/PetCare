@@ -37,11 +37,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   }, []);
 
   const handleBookingClick = () => {
-    if (isLoggedIn) {
-      nav("/online-booking");
-    } else {
-      nav("/login");
-    }
+    nav("/online-booking");
   };
 
   return (

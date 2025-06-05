@@ -306,7 +306,7 @@ const createBooking = async (req, res, next) => {
     } = req.body;
     
     // Ưu tiên sử dụng userId từ token, nếu không có thì sử dụng userId từ request body
-    const userId = tokenUserId || bodyUserId;
+    const userId = tokenUserId || bodyUserId || null;
 
     // 1. Validate bắt buộc
     if (!timeslotId) {
@@ -350,8 +350,8 @@ const createBooking = async (req, res, next) => {
 
     // 3. Xác định pet_info
     let pet_info;
-    if (petId) {
-      // Nếu gửi petId, lookup pet từ collection pets
+    if (userId && petId) {
+      // Nếu có userId và petId, lookup pet từ collection pets
       const Pet = await import("../models/pet.js").then(m => m.default);
       const pet = await Pet.findOne({ _id: petId, userId });
       
@@ -369,7 +369,7 @@ const createBooking = async (req, res, next) => {
         notes: pet.notes || "",
       };
     } else {
-      // Nếu không có petId, sử dụng pet_info từ payload
+      // Nếu không có userId hoặc petId, sử dụng pet_info từ payload
       if (!petInfoPayload) {
         return res.status(400).json({ error: "Missing pet information" });
       }
@@ -380,16 +380,16 @@ const createBooking = async (req, res, next) => {
     const bookingData = {
       userId,
       service_type,
-      price_at_booking: serviceInfo.price, // Lưu giá tại thời điểm đặt lịch
+      price_at_booking: serviceInfo.price,
       customer_name,
       phone_number,
       email,
       address,
       appointment_date,
       timeslot: timeslotId,
-      order_status,
+      order_status: order_status || "Pending",
       pet_info,
-      petId: petId || null,  // lưu petId nếu có
+      petId: petId || null,
     };
 
     const savedBooking = await bookingService.createBooking(bookingData, timeslot);

@@ -12,7 +12,7 @@ const ServiceItem = ({ title, image, description, price, onBookNow }) => {
       className="h-100"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => navigate("/grooming")}
+      onClick={() => navigate("/online-booking")}
       style={{ cursor: "pointer" }}
     >
       <div className="text-center pt-3">

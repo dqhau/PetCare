@@ -15,8 +15,8 @@ bookingRouter.get("/user/:userId", verifyAccessToken, bookingController.getBooki
 // Lấy thông tin booking theo ID
 bookingRouter.get("/detail/:id", bookingController.getBookingById);
 
-// Thêm booking mới - yêu cầu đăng nhập
-bookingRouter.post("/", verifyAccessToken, bookingController.createBooking);
+// Thêm booking mới - không yêu cầu đăng nhập
+bookingRouter.post("/", bookingController.createBooking);
 
 // Cập nhật trạng thái booking và lý do nếu chuyển thành 'cancel' api cho user
 bookingRouter.put("/update-status/:id", verifyAccessToken, bookingController.updateBookingStatus);
