@@ -70,13 +70,13 @@ const BookingList = ({
                       {booking._id}
                     </td>
                     <td>
-                      <div>{booking.userId?.fullname}</div>
-                      <small className="text-muted">{booking.userId?.phone}</small>
+                      <div>{booking.customer_name}</div>
+                      <small className="text-muted">{booking.phone_number}</small>
                     </td>
                     <td>{booking.service_type?.name || booking.serviceId?.name || 'N/A'}</td>
                     <td>
-                      <div>{booking.petId?.name || 'Không có thông tin'}</div>
-                      <small className="text-muted">{booking.petId?.species || ''}</small>
+                      <div>{booking.petId?.name || booking.pet_info?.pet_name || 'Không có thông tin'}</div>
+                      <small className="text-muted">{booking.petId?.species || booking.pet_info?.species || ''}</small>
                     </td>
                     <td>{booking.appointment_date ? formatDate(booking.appointment_date) : 'N/A'}</td>
                     <td className="text-center">{formatTimeSlot(booking)}</td>

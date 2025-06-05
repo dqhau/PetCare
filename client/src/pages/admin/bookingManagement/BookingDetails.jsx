@@ -90,27 +90,27 @@ const BookingDetails = ({
               <tbody>
                 <tr>
                   <td className="fw-bold">Tên thú cưng:</td>
-                  <td>{viewBooking.petId?.name || 'Không có thông tin'}</td>
+                  <td>{viewBooking.petId?.name || viewBooking.pet_info?.pet_name || 'Không có thông tin'}</td>
                 </tr>
                 <tr>
                   <td className="fw-bold">Loài:</td>
-                  <td>{viewBooking.petId?.species || 'Không có thông tin'}</td>
+                  <td>{viewBooking.petId?.species || viewBooking.pet_info?.species || 'Không có thông tin'}</td>
                 </tr>
                 <tr>
                   <td className="fw-bold">Giống:</td>
-                  <td>{viewBooking.petId?.breed || 'Không có thông tin'}</td>
+                  <td>{viewBooking.petId?.breed || viewBooking.pet_info?.breed || 'Không có thông tin'}</td>
                 </tr>
                 <tr>
                   <td className="fw-bold">Tuổi:</td>
-                  <td>{viewBooking.petId?.age ? `${viewBooking.petId.age} tuổi` : 'Không có thông tin'}</td>
+                  <td>{viewBooking.petId?.age ? `${viewBooking.petId.age} tuổi` : (viewBooking.pet_info?.age ? `${viewBooking.pet_info.age} tuổi` : 'Không có thông tin')}</td>
                 </tr>
                 <tr>
                   <td className="fw-bold">Cân nặng:</td>
-                  <td>{viewBooking.petId?.weight ? `${viewBooking.petId.weight} kg` : 'Không có thông tin'}</td>
+                  <td>{viewBooking.petId?.weight ? `${viewBooking.petId.weight} kg` : (viewBooking.pet_info?.weight ? `${viewBooking.pet_info.weight} kg` : 'Không có thông tin')}</td>
                 </tr>
                 <tr>
                   <td className="fw-bold">Ghi chú:</td>
-                  <td>{viewBooking.petId?.notes || 'Không có'}</td>
+                  <td>{viewBooking.petId?.notes || viewBooking.pet_info?.notes || 'Không có'}</td>
                 </tr>
               </tbody>
             </Table>
