@@ -397,7 +397,7 @@ const OnlineBooking = () => {
                   />
                   <Form.Control.Feedback type="invalid">{errors.appointment_date}</Form.Control.Feedback>
                   <Form.Text className="text-muted">
-                    Chọn ngày để xem các khung giờ có sẵn (tối thiểu hôm nay, tối đa 3 tháng kể từ hôm nay)
+                    Chọn ngày để xem các khung giờ có sẵn (tối thiểu hôm nay)
                   </Form.Text>
                 </Form.Group>
 
